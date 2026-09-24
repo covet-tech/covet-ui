@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Shelf · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+</head>
+<body data-page="inventory">
+  <header class="site-head"></header>
+
+  <main>
+    <section class="page-head" style="padding-bottom:36px">
+      <div class="shell">
+        <span class="eyebrow">My shelf</span>
+        <h1 class="display">Every pull, <em>both options open.</em></h1>
+        <p class="lede">Your pulls wait here until you decide. Ship free anytime, or take the instant buyback and the credit lands in your balance.</p>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="wallet-band">
+        <div class="amount"><small>Balance</small><span data-wallet></span></div>
+        <div class="actions">
+          <button class="btn btn-gold" onclick="setWallet(getWallet()+100);">Add $100 (demo)</button>
+          <button class="btn btn-ghost" style="background:transparent;color:#fff;border-color:rgba(255,255,255,0.3)" onclick="openWithdrawModal()">Transfer to bank</button>
+        </div>
+      </div>
+      <label class="micro" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;cursor:pointer">
+        <input type="checkbox" id="hideDone" style="accent-color:var(--gold)" onchange="localStorage.setItem('covet_hide_done', this.checked ? '1' : '0'); renderInventory()" />
+        Hide shipped &amp; sold
+      </label>
+      <div id="invHost"></div>
+
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script src="js/inventory.js?v=269"></script>
+</body>
+</html>

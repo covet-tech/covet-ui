@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<!-- ============================================================
+  COVET · luxury mystery boxes · static prototype
+
+  BRAND NAME OPTIONS (5):
+    1. COVET (built) · the word she already uses ("so coveted"),
+       verb + noun, scales past fragrance to handbag, shoe and
+       wardrobe boxes without a rename
+    2. DIBS · playful, "calling dibs", very shareable
+    3. KEPT · quiet luxury, "the ones you keep"
+    4. SPOILED · treat-yourself energy, great for gifting
+    5. MUSE · editorial and pretty, slightly generic
+
+  VISUAL DIRECTION (kept from v2): "Glossy magazine lacquer" ·
+  cream and blush ground, cherry-lacquer accent, fashion-mag
+  serif, pill buttons, springy motion, confetti on the reveal.
+
+  BOX STRATEGY: aesthetic identities, not perfumery taxonomy.
+  She buys the version of herself she's feeling today:
+  Clean Girl $10 · It Girl $25 · Old Money $50 · Archive $100,
+  plus The Handbag Box $250 (pre-owned, authenticated).
+  No public roadmap sections: future categories stay quiet.
+
+  RETENTION MECHANICS (female-psychology pass):
+    · Wishlist hearts everywhere → the Wishlist Box (her list,
+      one ships). Wishlists are native shopping behavior.
+    · Share any pull → weekly giveaway entry (posting is the
+      point; no-purchase-necessary line included).
+    · "Luckiest this week" wall instead of a leaderboard:
+      aspirational social proof, zero competition.
+
+  LANGUAGE: the unit is a BOX, the verb is UNBOX. Never "case".
+============================================================ -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Covet · Every box holds something real</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+</head>
+<body data-page="home">
+  <header class="site-head"></header>
+
+  <main>
+    <!-- hero -->
+    <section class="hero">
+      <div class="shell" style="position:relative">
+        <span class="eyebrow fade-up">Covet · The Unboxing House</span>
+        <h1 class="display fade-up d1">Every box holds <em>something real.</em></h1>
+        <p class="lede fade-up d2">The pieces you've been dreaming about, finally yours. Real, authenticated, <b style="color:var(--ink)">never a dupe</b>, and picked fairly every time <a href="fairness.html" style="color:inherit;text-decoration:underline;text-decoration-color:var(--gold-dim);text-underline-offset:3px">(you can check)</a>. Unbox it live, then ship it free or take the instant buyback.</p>
+        <div class="hero-cta fade-up d3">
+          <a class="btn btn-gold btn-lg" href="build.html">Build my wishlist box</a>
+          <a class="btn btn-ghost btn-lg" href="cases.html">Shop the boxes</a>
+        </div>
+        <div class="hero-scene" aria-hidden="true">
+          <div class="hs-glow"></div>
+          <span class="hs-spark s1">✨</span>
+          <span class="hs-spark s2">♥</span>
+          <span class="hs-spark s3">✨</span>
+          <span class="hs-spark s4">♥</span>
+          <span class="hs-spark" style="left:46%;top:1%;font-size:11px;animation-delay:-1.2s">✨</span>
+          <span class="hs-spark" style="right:1%;bottom:8%;font-size:13px;animation-delay:-2.8s">♥</span>
+          <span class="hs-spark" style="left:3%;bottom:26%;font-size:14px;animation-delay:-0.8s">♥</span>
+          <span class="hs-spark" style="right:1%;bottom:40%;font-size:12px;animation-delay:-3.6s">✨</span>
+          <span class="hs-spark" style="left:35%;top:2%;font-size:10px;animation-delay:-2s">♥</span>
+          <span class="hs-spark" style="left:7%;bottom:2%;font-size:12px;animation-delay:-4.4s">✨</span>
+          <div class="hs-card a">
+            <img class="hsc-img" src="assets/hero-perfume.png" alt="" />
+            <span class="hsc-name">Coco Mademoiselle</span>
+            <span class="hsc-tag hot">In boxes now</span>
+          </div>
+          <div class="hs-card b">
+            <img class="hsc-img" src="assets/hero-bag.png" alt="" />
+            <span class="hsc-name">Ferragamo Studio Bag</span>
+            <span class="hsc-tag hot">The Handbag Box</span>
+          </div>
+          <div class="hs-card c">
+            <img class="hsc-img" src="assets/hero-watch.png" alt="" />
+            <span class="hsc-name">IWC Portugieser</span>
+            <span class="hsc-tag">The Heiress Box</span>
+          </div>
+          <div class="hs-lid"><span></span></div>
+          <div class="hs-box"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- giveaway banner: teaser, scrolls to the showcase -->
+    <div class="promo-banner" onclick="document.getElementById('giveaway').scrollIntoView({behavior:'smooth'})">
+      <span class="pill">This week's giveaway</span>
+      <span><b>A vintage Chanel Classic Flap.</b> Every $1 opened = 1 entry · 5 free entries daily</span>
+    </div>
+
+    <!-- recent pulls ticker: right under the hero -->
+    <div class="ticker" aria-label="Recent pulls">
+      <div class="ticker-inner"></div>
+    </div>
+
+    <!-- daily free box -->
+    <section class="section" style="padding-top:56px;padding-bottom:56px" id="dailyfree">
+      <div class="shell">
+        <div class="section-head" style="margin-bottom:30px">
+          <div>
+            <span class="eyebrow">Free · every single day</span>
+            <h2>Your free box is waiting.</h2>
+          </div>
+          <span style="display:flex;align-items:center;gap:12px"><span class="streak-chip" id="streakChip" style="display:none"></span><span class="micro">Pick one · one open per day</span></span>
+        </div>
+        <div class="case-grid" id="dailyGrid"></div>
+      </div>
+    </section>
+
+    <!-- the wishlist box: signature feature, interactive -->
+    <section class="section" style="padding-bottom:64px">
+      <div class="shell">
+        <div class="wish-promo">
+          <span class="float-heart" style="left:44%;top:8%;font-size:13px;animation-delay:-1s">✨</span>
+          <span class="float-heart" style="right:3%;bottom:10%;font-size:16px;animation-delay:-4.2s">♥</span>
+          <span class="float-heart" style="left:2%;bottom:14%;font-size:12px;animation-delay:-2.6s">♥</span>
+          <div>
+            <span class="eyebrow">The Wishlist Box · Only on Covet</span>
+            <h2>Build your wishlist.<br>Get what you're <em>meant</em> to have.</h2>
+            <p><b style="color:var(--ink)">Your custom box.</b> Heart 2 to 8 things you love, choose how likely each one should be, then open your box. One of your picks ships to your door, and whatever arrives was meant to be.</p>
+            <div class="wp-cta">
+              <a class="btn btn-gold" data-wishcta href="build.html">Build my wishlist</a>
+              <span class="micro"><b data-wishcount style="color:var(--gold)">0</b> hearted · tap a heart to start</span>
+            </div>
+          </div>
+          <div class="wh-grid" id="whGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- rotating box spotlight: same panel as the boxes page -->
+    <section class="shell" style="margin-bottom:64px">
+      <div id="promoMount"></div>
+    </section>
+
+    <!-- giveaway showcase: lux edition -->
+    <section class="section" style="padding-top:0;padding-bottom:64px" id="giveaway">
+      <div class="shell">
+        <div class="lux-banner lux-give">
+          <div class="lux-quilt"></div>
+          <div class="lux-spot"></div>
+          <div class="lux-copy">
+            <div class="lux-eyebrow-row">
+              <span class="lux-eyebrow">This week's giveaway</span>
+              <span class="lux-eyebrow" style="color:var(--gold-hi)">Free to enter</span>
+            </div>
+            <h1 class="lux-h1">A vintage Chanel<span class="lux-foil">Classic Flap.</span></h1>
+            <p class="lux-lede">The real thing, <strong>free to enter.</strong> Authenticated, shipped free to one winner, drawn Sunday at midnight ET. Every entry counts the same.</p>
+            <ul class="lux-ways">
+              <li>Stop by daily <span class="lw-dots"></span> <b>+5 free</b></li>
+              <li>Open any box <span class="lw-dots"></span> <b>$1 = 1 entry</b></li>
+              <li>Post a pull <span class="lw-dots"></span> <b>+5 per platform</b></li>
+              <li>Follow @covet.gg <span class="lw-dots"></span> <b>+3 each</b></li>
+            </ul>
+            <div class="lux-cta-row">
+              <button class="lux-cta" data-dailycta onclick="claimDaily()">Claim today's 5 free entries</button>
+              <button class="lux-more" onclick="openGiveawayModal()">All the ways to enter →</button>
+            </div>
+            <p class="lux-entries">you're in with <b id="giveEntries">·</b> entries ♥</p>
+            <p class="give-rng" style="margin-top:16px">winner drawn by random.org · no purchase necessary<br>last week: Lena R. took the Lady Dior Mini ♥</p>
+          </div>
+          <div class="lux-stage" aria-hidden="true">
+            <div class="lux-card lux-prize">
+              <span class="lux-rarity">✦ This week's prize</span>
+              <div class="lux-art" id="gpPrizeArt"></div>
+              <h3>Chanel Classic Flap</h3>
+              <p class="lux-tag">vintage · authenticated</p>
+              <div class="lux-divide"></div>
+              <div class="lux-rv">Resale value</div>
+              <div class="lux-rvv">$5,900+</div>
+            </div>
+            <div class="lux-countdown">Drawn in <em id="giveCountdown">·</em></div>
+            <svg class="lux-spark" style="top:8%;right:48%;animation-delay:.4s" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z"/></svg>
+            <svg class="lux-spark" style="top:64%;right:6%;animation-delay:1.7s" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- boxes -->
+    <section class="section" style="padding-top:0">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Or shop a curated box</span>
+            <h2>What are we feeling today?</h2>
+          </div>
+          <div class="feat-nav">
+            <button class="feat-arrow" onclick="featGo(-1)" aria-label="Previous">←</button>
+            <span class="feat-dots" id="featDots"></span>
+            <button class="feat-arrow" onclick="featGo(1)" aria-label="Next">→</button>
+            <a class="section-link" href="cases.html">View all boxes</a>
+          </div>
+        </div>
+        <div class="feat-carousel" id="featuredCases"></div>
+      </div>
+    </section>
+
+    <!-- how it works -->
+    <section class="section" style="padding-top:0">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">How it works</span>
+            <h2>Three steps, <em class="hl">no fine print surprises.</em></h2>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <h3>Pick a box</h3>
+            <p>Fixed price, from $10 up to the four-figure grail boxes, or box your own wishlist. Every possible item and its exact odds are printed on the page before you buy.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <h3>Watch the reveal</h3>
+            <p>A genuine, sealed product every single time, with an instant buyback offer on every reveal if it's not the one.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3>Ship it or sell it back</h3>
+            <p>Free tracked shipping to your door, or accept our instant buyback and the credit lands in your balance, transferable to your bank any time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- luckiest this week -->
+    <section class="section" style="padding-top:0">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Luckiest this week</span>
+            <h2>Real pulls. Updated Mondays.</h2>
+          </div>
+          <a class="section-link" href="#" onclick="openGiveawayModal();return false">This week's giveaway</a>
+        </div>
+        <div class="lucky-grid" id="luckyGrid"></div>
+      </div>
+    </section>
+
+    <!-- covet promise -->
+    <section class="section" style="padding-top:20px">
+      <div class="shell">
+        <div class="promise">
+          <div class="promise-quilt"></div>
+          <div class="promise-in">
+            <span class="promise-eyebrow">The Covet Promise</span>
+            <h2 class="promise-title">Three things that are <em>always</em> certain.</h2>
+            <div class="promise-item">
+              <span class="p-num">I.</span>
+              <h3>Real, or it <em>doesn't ship.</em></h3>
+              <p><b>Always guaranteed authentic.</b> A dupe has never touched a Covet box, and never will.</p>
+            </div>
+            <div class="promise-item">
+              <span class="p-num">II.</span>
+              <h3>Instant <em>buyback.</em></h3>
+              <p>Not your vibe? We <b>offer to buy it back on the spot,</b> and the credit is yours instantly.</p>
+            </div>
+            <div class="promise-item">
+              <span class="p-num">III.</span>
+              <h3>Fair, and <em>you can check.</em></h3>
+              <p>Every possible piece and its exact chance, <b>printed before you spend a cent.</b> Verifiable pull by pull.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      mountPromoPanel("promoMount");
+      const whIds = ["br540ext", "delina75", "kayali10", "missdior50", "classicflap", "oudwood30"];
+      document.getElementById("whGrid").innerHTML = whIds.map((id) => {
+        const d = allDrops().find((x) => x.id === id);
+        return `<div class="wh-card">
+          ${heartBtn(d.id)}
+          ${productArt(d, 46)}
+          <b>${d.name}</b>
+          <span>${d.house} · ${money(d.value)}</span>
+        </div>`;
+      }).join("");
+      refreshWishStats();
+
+      const gpPrize = allDrops().find((d) => d.id === "classicflap");
+      document.getElementById("gpPrizeArt").innerHTML = productArt(gpPrize, 92);
+      document.getElementById("giveEntries").textContent = getEntries();
+      /* live countdown to Sunday midnight ET */
+      function tickGiveaway() {
+        const now = new Date();
+        const target = new Date(now);
+        const day = now.getUTCDay();
+        const daysToSunday = (7 - day) % 7 || 7;
+        target.setUTCDate(now.getUTCDate() + daysToSunday);
+        target.setUTCHours(4, 0, 0, 0); /* midnight ET ≈ 04:00 UTC */
+        let ms = target - now;
+        if (ms < 0) ms += 7 * 864e5;
+        const d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4);
+        document.getElementById("giveCountdown").textContent = `${d}d ${h}h ${m}m`;
+      }
+      tickGiveaway();
+      setInterval(tickGiveaway, 30000);
+
+      /* hero cards swap between live boxes and The Heiress Box promo */
+      const heroIcons = {
+        perfumeA: `<img class="hsc-img" src="assets/hero-perfume.png" alt="" />`,
+        perfumeB: `<img class="hsc-img" src="assets/hero-perfume2.png" alt="" />`,
+        bagA: `<img class="hsc-img" src="assets/hero-bag.png" alt="" />`,
+        bagB: `<img class="hsc-img" src="assets/hero-bag2.png" alt="" />`,
+        watch: `<img class="hsc-img" src="assets/hero-watch.png" alt="" />`,
+        jewel: `<img class="hsc-img" src="assets/hero-jewel.png" alt="" />`,
+      };
+      let heroSets = [
+        [
+          { svg: heroIcons.perfumeA, name: "Coco Mademoiselle", tag: "In boxes now", hot: true },
+          { svg: heroIcons.bagA, name: "Ferragamo Studio Bag", tag: "The Handbag Box", hot: true },
+          { svg: heroIcons.watch, name: "IWC Portugieser", tag: "The Heiress Box", hot: false },
+        ],
+        [
+          { svg: heroIcons.jewel, name: "Diamond Tennis Bracelet", tag: "The Ice Box", hot: false },
+          { svg: heroIcons.bagB, name: "Vintage Top Handle", tag: "The Handbag Box", hot: true },
+          { svg: heroIcons.perfumeB, name: "Coco Noir", tag: "The Parisian Box", hot: false },
+        ],
+      ];
+      /* ops override from the admin hero-card editor */
+      try {
+        const o = JSON.parse(localStorage.getItem("covet_hero_cards"));
+        if (o && o.sets) {
+          const heroImg = (k) => `<img class="hsc-img" src="assets/${k}.png" alt="" />`;
+          heroSets = o.sets.map((set) => set.map((c) => ({ svg: heroImg(c.img), name: c.name, tag: c.tag, hot: !!c.hot })));
+          [...document.querySelectorAll(".hs-card")].forEach((el, i) => {
+            const d = heroSets[0][i];
+            if (d) el.innerHTML = `${d.svg}<span class="hsc-name">${d.name}</span><span class="hsc-tag ${d.hot ? "hot" : ""}">${d.tag}</span>`;
+          });
+        }
+      } catch {}
+      let heroSet = 0;
+      setInterval(() => {
+        if (document.hidden) return;
+        heroSet = 1 - heroSet;
+        [...document.querySelectorAll(".hs-card")].forEach((c, i) => {
+          const out = c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: i * 90, fill: "forwards", easing: "ease-in" });
+          out.onfinish = () => {
+            const d = heroSets[heroSet][i];
+            c.innerHTML = `${d.svg}<span class="hsc-name">${d.name}</span><span class="hsc-tag ${d.hot ? "hot" : ""}">${d.tag}</span>`;
+            c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, fill: "forwards", easing: "ease-out" });
+          };
+        });
+      }, 7000);
+
+      const FEATURED_SETS = [
+        ["cleangirl", "handbag", "coquette"],
+        ["beauty", "sunnies", "datenight"],
+        ["oldmoney", "icebox", "heiress"],
+      ];
+      const featEl = document.getElementById("featuredCases");
+      featEl.innerHTML = FEATURED_SETS.map((set) =>
+        `<div class="feat-page">${set.map((id) => caseCardHTML(getCase(id))).join("")}</div>`).join("");
+      document.getElementById("featDots").innerHTML = FEATURED_SETS.map((_, i) =>
+        `<i class="${i === 0 ? "on" : ""}" onclick="featTo(${i})"></i>`).join("");
+      const featStep = () => featEl.children[1] ? featEl.children[1].offsetLeft - featEl.children[0].offsetLeft : featEl.clientWidth;
+      window.featTo = (i) => featEl.scrollTo({ left: i * featStep(), behavior: "smooth" });
+      window.featGo = (dir) => {
+        const n = FEATURED_SETS.length;
+        const i = (Math.round(featEl.scrollLeft / featStep()) + dir + n) % n;
+        featTo(i);
+      };
+      featEl.addEventListener("scroll", () => {
+        const i = Math.round(featEl.scrollLeft / featStep());
+        document.querySelectorAll("#featDots i").forEach((d, j) => d.classList.toggle("on", j === i));
+      }, { passive: true });
+
+      window.renderDailyGrid = function () {
+      const claimedBox = !canClaimDailyBox();
+      const liveDailies = FREE_BOXES.filter((c) => !c.off);
+      if (!liveDailies.length) {
+        const host = document.getElementById("dailyGrid");
+        const sec = host.closest("section") || host.parentElement;
+        sec.style.display = "none";
+        return;
+      }
+      document.getElementById("dailyGrid").innerHTML = liveDailies.map((c) => {
+        const tease = [...c.drops].sort((a, b) => b.value - a.value).slice(0, 3);
+        return `
+        <a class="case-card" href="#" onclick="openDailyBox('${c.id}');return false" style="--tint:${c.tint}">
+          <div class="cc-top"><span class="case-num">Free · daily</span><span class="cc-price-wrap"><span class="cc-price" style="color:var(--gold)">$0</span><span class="cc-toppull">top pull ${money(tease[0].value)}</span></span></div>
+          <h3>${c.short}</h3>
+          <p class="cc-get">${c.blurb} Could hold:</p>
+          <div class="cc-drops">
+            ${tease.map((d) => {
+              const r = RARITY[d.rarity];
+              return `<div class="cc-drop" style="--rar:${r.color}">${productArt(d, 40)}<span>${d.name}</span><b>${money(d.value)}</b></div>`;
+            }).join("")}
+          </div>
+          <div class="cc-vals"><span>Ships real, or trades for credit</span><span>One open per day</span></div>
+          <span class="btn ${claimedBox ? "btn-quiet" : "btn-gold"}">${claimedBox ? "Back tomorrow ✨" : "Open free"}</span>
+        </a>`;
+      }).join("");
+      const days = streakDays();
+      const chip = document.getElementById("streakChip");
+      chip.style.display = "";
+      chip.textContent = days > 0 ? `day ${days} ♥` : "start a streak ♥";
+      };
+      renderDailyGrid();
+
+      document.getElementById("luckyGrid").innerHTML = LUCKY_WEEK.map((w) => {
+        const kase = getCase(w.caseId);
+        const drop = kase.drops.find((d) => d.id === w.dropId);
+        const rar = RARITY[drop.rarity];
+        return `<div class="lucky-card" style="--rar:${rar.color}">
+          <div class="lc-glow"></div>
+          <span class="lc-odds">✨ ${w.note}</span>
+          <div class="bottle-tile" style="--rar:${rar.color}">${bottleSVG(26)}</div>
+          <b>${drop.house} ${drop.name}</b>
+          <span class="micro"><b>${w.who}</b> · ${kase.short} · market ${money(drop.value)}</span>
+        </div>`;
+      }).join("");
+    });
+  </script>
+</body>
+</html>

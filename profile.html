@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+  <style>
+    .profile-head { display: flex; align-items: center; gap: 22px; padding: 72px 0 40px; }
+    .avatar {
+      width: 84px; height: 84px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+      color: #fff;
+      font-family: var(--serif); font-size: 38px; font-weight: 460;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 14px 34px rgba(224, 45, 86, 0.3);
+      flex-shrink: 0;
+    }
+    .profile-head h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(30px, 4vw, 42px); line-height: 1.1; }
+    .best-card {
+      position: relative;
+      display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      padding: 32px 36px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .best-card .bc-glow {
+      position: absolute; inset: -50% -20% auto; height: 240px;
+      background: radial-gradient(50% 70% at 50% 70%, color-mix(in srgb, var(--rar, var(--gold)) 16%, transparent), transparent 70%);
+      pointer-events: none;
+    }
+    .best-card .bc-art {
+      width: 96px; height: 96px; border-radius: 22px; flex-shrink: 0;
+      background: color-mix(in srgb, var(--rar, var(--gold)) 11%, #fff);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .best-card h3 { font-family: var(--serif); font-weight: 440; font-size: 24px; line-height: 1.15; }
+    .best-card .bc-meta { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+    .best-card .bc-chip {
+      display: inline-block; margin-bottom: 8px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--rar, var(--gold));
+      background: color-mix(in srgb, var(--rar, var(--gold)) 12%, transparent);
+      padding: 4px 12px; border-radius: 100px;
+    }
+    .best-card .btn { margin-left: auto; }
+    @media (max-width: 640px) { .best-card .btn { margin-left: 0; width: 100%; } }
+    .best-empty {
+      border: 2px dashed var(--line);
+      border-radius: 24px;
+      padding: 44px 30px;
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .best-empty b { display: block; font-family: var(--serif); font-size: 22px; font-weight: 440; color: var(--ink); margin-bottom: 6px; }
+    .code-panel {
+      position: relative;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+      background: linear-gradient(120deg, #d92747, #ff5f85);
+      border-radius: 24px;
+      padding: 34px 36px;
+      color: #fff;
+      overflow: hidden;
+      box-shadow: 0 24px 56px rgba(224, 45, 86, 0.28);
+      margin-bottom: 44px;
+    }
+    .code-panel .cp-label { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+    .code-panel .cp-code { font-family: var(--serif); font-size: 40px; font-weight: 460; letter-spacing: 0.05em; line-height: 1.1; }
+    .code-panel .cp-sub { font-size: 12.5px; color: rgba(255,255,255,0.85); max-width: 40ch; margin-top: 6px; }
+    .quick-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .rp-head { font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+    .rp-row {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      padding: 12px 20px;
+      margin-bottom: 10px;
+    }
+    .rp-art { width: 40px; display: flex; justify-content: center; flex-shrink: 0; }
+    .rp-name { flex: 1; min-width: 0; }
+    .rp-name b { display: block; font-family: var(--serif); font-weight: 470; font-size: 15px; line-height: 1.2; }
+    .rp-name span { font-size: 11px; color: var(--muted); }
+    .rp-val { font-family: var(--serif); font-size: 16px; font-weight: 460; color: var(--gold); flex-shrink: 0; }
+    .rp-status {
+      font-size: 9.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); background: var(--bg2);
+      padding: 4px 11px; border-radius: 100px;
+      flex-shrink: 0;
+    }
+    .earn-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      padding: 28px 34px;
+      margin-bottom: 44px;
+    }
+    .earn-card .ec-label { display: block; font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-bottom: 4px; }
+    .earn-card .ec-amt { font-family: var(--serif); font-size: 34px; font-weight: 440; color: var(--gold); line-height: 1.1; }
+    .earn-card .micro { max-width: 46ch; margin-top: 8px; }
+    .profile-head { padding: 60px 0 30px; }
+    .head-actions { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+    .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 26px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--line-soft);
+      border-radius: 20px; box-shadow: var(--shadow-soft);
+      padding: 22px 24px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-card .sc-val { font-family: var(--serif); font-size: 30px; font-weight: 440; color: var(--gold); line-height: 1.1; }
+    .stat-card .micro { margin-top: auto; padding-top: 8px; }
+    .stat-card .btn { align-self: flex-start; margin-top: 10px; padding: 8px 18px; font-size: 11px; }
+    .profile-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 20px; align-items: start; margin-bottom: 44px; }
+    .profile-grid .code-panel { padding: 28px 30px; margin-bottom: 20px; }
+    .profile-grid .code-panel .cp-code { font-size: 32px; }
+    .profile-grid .earn-card { padding: 24px 28px; margin-bottom: 20px; }
+    .side-links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .seed-card {
+      background: var(--surface); border: 1px solid var(--line-soft);
+      border-radius: 20px; box-shadow: var(--shadow-soft); padding: 22px 24px;
+    }
+    @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .stat-strip { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="profile">
+  <header class="site-head"></header>
+
+  <main>
+    <section class="shell">
+      <div class="profile-head">
+        <div class="avatar" id="pAvatar">R</div>
+        <div>
+          <span class="eyebrow">My profile</span>
+          <h1 id="pHello">Hi, Ava ♥</h1>
+          <p class="micro" id="pSince" style="margin-top:6px">With Covet since August 2026</p>
+        </div>
+        <div class="head-actions">
+          <button class="dm-toggle" onclick="toggleDark()" aria-label="Toggle dark mode">
+            after dark
+            <span class="dm-track"><span class="dm-knob" id="dmKnob">☀️</span></span>
+          </button>
+          <button class="btn btn-quiet" onclick="editName()">Edit name</button>
+          <button class="btn btn-quiet" onclick="logOut()">Log out</button>
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat-card">
+          <span class="ec-label">Balance</span>
+          <b class="sc-val" id="pBal">·</b>
+          <p class="micro">Spendable on any box, or transferable to your bank.</p>
+        </div>
+        <div class="stat-card">
+          <span class="ec-label">Giveaway entries</span>
+          <b class="sc-val" id="pEnt">·</b>
+          <p class="micro">Every entry counts in this week's draw.</p>
+          <button class="btn btn-ghost" onclick="openGiveawayModal()">Today's free entry</button>
+        </div>
+        <div class="stat-card" id="streakCard">
+          <span class="ec-label">Daily streak</span>
+          <b class="sc-val" id="pStreak">·</b>
+          <p class="micro" id="pStreakSub">Open your free box daily to build it. Every 7th day banks +5 giveaway entries.</p>
+          <a class="btn btn-gold" href="index.html#dailyfree" id="pStreakBtn">Open today's free box</a>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div>
+          <div id="bestHost" style="margin-bottom:24px"></div>
+          <div id="recentHost"></div>
+        </div>
+        <aside>
+          <div class="code-panel">
+            <span class="float-heart" style="right:36%;top:12%;font-size:13px">✨</span>
+            <span class="float-heart" style="right:4%;bottom:14%;font-size:15px;animation-delay:-2.4s">♥</span>
+            <div>
+              <div class="cp-label">My code · share it anywhere</div>
+              <div class="cp-code" id="pCode">RILEY5</div>
+              <p class="cp-sub">Friends get $5 off their first box. You get credit on every box they ever open.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:stretch">
+              <button class="btn gp-btn" onclick="copyCode()">Copy my code</button>
+              <a class="btn" id="mkBtn" href="mediakit.html" style="display:none;background:rgba(255,255,255,0.16);color:#fff;border-color:rgba(255,255,255,0.35)">Creator media kit ↗</a>
+            </div>
+          </div>
+
+          <div class="earn-card">
+            <div>
+              <span class="ec-label">Creator earnings · pending</span>
+              <b class="ec-amt" id="ecAmt">$0</b>
+              <p class="micro">Your cut of every box your referrals open. Claims land in your balance as credit.</p>
+            </div>
+            <button class="btn btn-gold" id="ecBtn" onclick="claimEarnings()">Claim to balance</button>
+          </div>
+
+          <div class="side-links">
+            <a class="btn btn-ghost" href="build.html">My wishlist</a>
+            <a class="btn btn-ghost" href="inventory.html">My shelf</a>
+          </div>
+
+          <div class="seed-card">
+            <span class="ec-label">Fairness · my client seed</span>
+            <input id="pSeed" maxlength="32" style="display:block;margin:8px 0 6px;padding:10px 16px;width:100%;background:var(--bg);border:1px solid var(--line-soft);border-radius:100px;font:600 13px var(--sans,sans-serif);color:var(--ink)"
+              oninput="localStorage.setItem('covet_client_seed', this.value.replace(/[^a-zA-Z0-9-_]/g,''))" />
+            <p class="micro">Mixes into every roll so we can't pick your outcome. Change it whenever. <a href="fairness.html" style="color:var(--gold)">How it works</a></p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <p class="micro" style="text-align:center;padding-bottom:40px"><a href="#" style="color:var(--faint)" onclick="deleteAccountModal();return false">Delete my account</a></p>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    function myName() { return localStorage.getItem("covet_name") || "Ava"; }
+    function myCode() {
+      return localStorage.getItem("covet_code") || (myName().toUpperCase().replace(/[^A-Z]/g, "").slice(0, 10) + "5"); /* the 5 = her $5 off */
+    }
+    function getPending() {
+      const v = localStorage.getItem("covet_pending");
+      return v == null ? 23.4 : parseFloat(v); /* seeded demo earnings */
+    }
+    function renderEarnings() {
+      const p = getPending();
+      document.getElementById("ecAmt").textContent = money(p);
+      const btn = document.getElementById("ecBtn");
+      btn.disabled = p <= 0;
+      btn.textContent = p > 0 ? "Claim to balance" : "Nothing pending yet";
+    }
+    function claimEarnings() {
+      const p = getPending();
+      if (p <= 0) return;
+      const ytd = parseFloat(localStorage.getItem("covet_creator_ytd") || "0");
+      if (ytd + p >= 600 && !hasW9()) { openW9Modal(claimEarnings); return; }
+      localStorage.setItem("covet_creator_ytd", String(ytd + p));
+      localStorage.setItem("covet_pending", "0");
+      setWallet(getWallet() + p);
+      renderEarnings();
+      confettiBurst();
+      openModal(`
+        <span class="eyebrow">✨ Claimed</span>
+        <h2>${money(p)} is yours</h2>
+        <p class="modal-sub">Your creator earnings just landed in your balance, now ${money(getWallet())}. Spend it on any box, or transfer it to your bank. More accrues as your referrals keep opening.</p>
+        <div class="modal-actions">
+          <a class="btn btn-gold" href="cases.html">Put it to work</a>
+          <button class="btn btn-quiet" onclick="closeModal()">Done</button>
+        </div>
+      `);
+    }
+    function renderProfile() {
+      const name = myName();
+      document.getElementById("pAvatar").textContent = name[0].toUpperCase();
+      document.getElementById("pHello").textContent = `Hi, ${name} ♥`;
+      document.getElementById("pCode").textContent = myCode();
+      /* media kit unlocks once she's actually claimed a creator code */
+      if (localStorage.getItem("covet_code")) document.getElementById("mkBtn").style.display = "inline-flex";
+      renderBestPull();
+      renderEarnings();
+      renderRecent();
+    }
+    function renderRecent() {
+      const host = document.getElementById("recentHost");
+      const items = getInv().slice(0, 5);
+      if (!items.length) { host.style.display = "none"; return; }
+      const STATUS = { vault: "On my shelf", shipping: "Shipping", sold: "Sold back" };
+      host.innerHTML = `<div class="rp-head">Recent pulls</div>` + items.map((item) => {
+        const kase = getCase(item.caseId);
+        const drop = kase.drops.find((d) => d.id === item.dropId) || allDrops().find((d) => d.id === item.dropId);
+        if (!drop) return "";
+        return `<div class="rp-row">
+          <span class="rp-art">${productArt(drop, 30)}</span>
+          <div class="rp-name"><b>${drop.house} ${drop.name}</b><span>${item.boxName || kase.name} · ${item.ts}</span></div>
+          <b class="rp-val">${money(drop.value)}</b>
+          <span class="rp-status">${STATUS[item.status] || "On my shelf"}</span>
+        </div>`;
+      }).join("");
+    }
+    function renderBestPull() {
+      const host = document.getElementById("bestHost");
+      let best = null;
+      for (const item of getInv()) {
+        const kase = getCase(item.caseId);
+        const drop = kase.drops.find((d) => d.id === item.dropId) || allDrops().find((d) => d.id === item.dropId);
+        if (drop && (!best || drop.value > best.drop.value)) best = { drop, boxName: item.boxName || kase.name };
+      }
+      if (!best) {
+        host.innerHTML = `<div class="best-empty">
+          <b>Your best pull is still out there ♥</b>
+          Open your first box and this is where you'll flex it.
+          <div style="margin-top:18px"><a class="btn btn-gold" href="cases.html">Unbox one</a></div>
+        </div>`;
+        return;
+      }
+      const rar = RARITY[best.drop.rarity];
+      host.innerHTML = `<div class="best-card" style="--rar:${rar.color}">
+        <div class="bc-glow"></div>
+        <div class="bc-art">${productArt(best.drop, 64)}</div>
+        <div>
+          <span class="bc-chip">✨ My best pull · ${best.drop.odds}% odds</span>
+          <h3>${best.drop.house} ${best.drop.name}</h3>
+          <div class="bc-meta">Market value ${money(best.drop.value)} · from ${best.boxName}</div>
+        </div>
+        <button class="btn btn-gold" onclick="sharePull('TikTok','${best.drop.house} ${best.drop.name}')">Post it</button>
+      </div>`;
+    }
+    function copyCode() {
+      const code = myCode();
+      if (navigator.clipboard) navigator.clipboard.writeText(code);
+      openModal(`
+        <span class="eyebrow">✨ Copied</span>
+        <h2>${code}</h2>
+        <p class="modal-sub">Drop it in your bio, your captions, the group chat. Friends get $5 off their first box, and you earn credit on every box they ever open.</p>
+        <div class="modal-actions"><button class="btn btn-gold" onclick="closeModal()">Done</button></div>
+      `);
+    }
+    function editName() {
+      openModal(`
+        <span class="eyebrow">My profile</span>
+        <h2>What should we call you?</h2>
+        <div class="field" style="text-align:left;margin-top:18px">
+          <label>Name</label>
+          <input id="nameInput" type="text" value="${myName()}" maxlength="20" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-gold" onclick="saveName()">Save</button>
+          <button class="btn btn-quiet" onclick="closeModal()">Cancel</button>
+        </div>
+      `);
+    }
+    function logOut() {
+      openModal(`
+        <span class="eyebrow">Log out</span>
+        <h2>Come back soon ♥</h2>
+        <p class="modal-sub">Your shelf, wishlist, and balance will be right here waiting. And there's a free giveaway entry with your name on it tomorrow.</p>
+        <div class="modal-actions">
+          <a class="btn btn-gold" href="index.html" onclick="localStorage.removeItem('covet_signed_in')">Log out</a>
+          <button class="btn btn-quiet" onclick="closeModal()">Stay</button>
+        </div>
+      `);
+    }
+    function saveName() {
+      const v = document.getElementById("nameInput").value.trim();
+      if (v) {
+        localStorage.setItem("covet_name", v);
+        localStorage.removeItem("covet_code");
+      }
+      closeModal();
+      renderProfile();
+    }
+    document.addEventListener("DOMContentLoaded", renderProfile);
+  </script>
+<script>
+    function deleteAccountModal() {
+      openModal(`
+        <span class="eyebrow">Delete account</span>
+        <h2>All of you, gone</h2>
+        <p class="modal-sub">Your balance, shelf, wishlists, and entries are permanently deleted, and your data removal completes within 30 days. Transfer or spend your balance first; it can't follow you.</p>
+        <div class="modal-actions">
+          <button class="btn btn-quiet" onclick="localStorage.clear();location.href='index.html'">Delete forever</button>
+          <button class="btn btn-gold" onclick="closeModal()">Keep my account ♥</button>
+        </div>
+      `);
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      let seed = localStorage.getItem("covet_client_seed");
+      if (!seed) { seed = "lucky-" + Math.random().toString(36).slice(2, 8); localStorage.setItem("covet_client_seed", seed); }
+      document.getElementById("pSeed").value = seed;
+      document.getElementById("pBal").textContent = money(getWallet());
+      if (document.documentElement.hasAttribute("data-dark")) document.getElementById("dmKnob").textContent = "\ud83c\udf19";
+      document.getElementById("pEnt").textContent = getEntries();
+      if (typeof dailyProgramPaused === "function" && dailyProgramPaused()) {
+        document.getElementById("streakCard").style.display = "none";
+      }
+      const d = streakDays();
+      document.getElementById("pStreak").textContent = d > 0 ? `day ${d} ♥` : "start a streak ♥";
+      const sub = document.getElementById("pStreakSub");
+      if (d > 0) {
+        const toBonus = 7 - (d % 7 || 7) || 7;
+        sub.textContent = d % 7 === 0
+          ? "Bonus day! +5 giveaway entries banked today. Keep it alive tomorrow ♥"
+          : `${7 - (d % 7)} more ${7 - (d % 7) === 1 ? "day" : "days"} to your +5 entry bonus. Miss a day and it resets.`;
+      }
+      if (typeof freeCapReached === "function" && freeCapReached()) {
+        const b = document.getElementById("pStreakBtn");
+        b.textContent = "Unlock daily boxes · open any box";
+        b.href = "cases.html";
+      } else if (!canClaimDailyBox()) {
+        const b = document.getElementById("pStreakBtn");
+        b.textContent = "Opened today ✨";
+        b.classList.remove("btn-gold"); b.classList.add("btn-quiet");
+      }
+    });
+  </script>
+</body>
+</html>

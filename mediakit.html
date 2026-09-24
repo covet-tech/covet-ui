@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Covet · Creator Media Kit</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+  <style>
+    .mk-cover {
+      position: relative;
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px; align-items: center;
+      background: linear-gradient(120deg, #fff7f3, #fdeee9);
+      border: 1px solid var(--line-soft);
+      border-radius: 28px;
+      padding: 56px 56px;
+      overflow: hidden;
+      margin-bottom: 26px;
+    }
+    .mk-cover img { width: 100%; border-radius: 20px; box-shadow: var(--shadow); }
+    .mk-section {
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      padding: 40px 46px;
+      margin-bottom: 26px;
+      break-inside: avoid;
+    }
+    .mk-section h2 { font-family: var(--serif); font-weight: 420; font-size: 28px; margin: 6px 0 16px; }
+    .mk-section h2 em { font-style: italic; color: var(--gold); }
+    .mk-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 22px; }
+    .mk-card { background: var(--bg); border: 1px solid var(--line-soft); border-radius: 18px; padding: 22px 22px; }
+    .mk-card b { display: block; font-family: var(--serif); font-size: 17px; font-weight: 470; margin-bottom: 6px; }
+    .mk-card p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .mk-num { font-family: var(--serif); font-size: 30px; font-weight: 440; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+    table.mk-tiers { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 13.5px; }
+    .mk-tiers th { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+    .mk-tiers td { padding: 13px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    .mk-tiers td b { font-family: var(--serif); font-size: 16px; font-weight: 470; }
+    .mk-tiers tr:last-child td { border-bottom: 0; }
+    .hook { display: flex; gap: 14px; align-items: baseline; padding: 11px 0; border-bottom: 1px dashed var(--line-soft); }
+    .hook:last-child { border-bottom: 0; }
+    .hook b { color: var(--gold); font-family: var(--serif); font-size: 16px; flex-shrink: 0; }
+    .dd { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 18px; max-width: 62ch; }
+    .dd ul { list-style: none; }
+    .dd li { padding: 8px 0 8px 26px; position: relative; font-size: 13.5px; color: var(--muted); border-bottom: 1px dashed var(--line-soft); }
+    .dd li::before { position: absolute; left: 0; font-weight: 800; }
+    .dd .do li::before { content: "♥"; color: var(--gold); }
+    .dd .dont li::before { content: "✕"; color: #b0641e; }
+    .dd h4 { font-size: 10.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 4px; }
+    .dd .do h4 { color: var(--gold); }
+    .dd .dont h4 { color: #b0641e; }
+    .swatches { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 18px; }
+    .sw { width: 128px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-soft); }
+    .sw i { display: block; height: 74px; }
+    .sw span { display: block; padding: 9px 12px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; color: var(--muted); }
+    .mk-imgs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; }
+    .mk-imgs figure { margin: 0; }
+    .mk-imgs img { width: 100%; border-radius: 14px; display: block; }
+    .mk-imgs figcaption { font-size: 10.5px; color: var(--faint); margin-top: 7px; }
+    .imgwrap { position: relative; }
+    .dchip {
+      position: absolute; left: 10px; bottom: 10px;
+      font-family: var(--serif); font-size: 12px; font-weight: 500; letter-spacing: 0.08em;
+      color: #fff; background: rgba(41, 25, 43, 0.55);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px; border-radius: 100px;
+    }
+    .mk-cover .imgwrap .dchip { font-size: 14px; left: 14px; bottom: 14px; }
+    .reveal-steps { display: grid; grid-template-columns: 220px 1fr; gap: 34px; align-items: center; margin-top: 22px; }
+    .reveal-demo {
+      position: relative; height: 250px; border-radius: 20px;
+      background: linear-gradient(160deg, #3a2333, #29192b);
+      overflow: hidden;
+    }
+    .reveal-demo .gpx { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -46%) scale(0.82); }
+    .rstep { display: flex; gap: 16px; align-items: baseline; padding: 12px 0; border-bottom: 1px dashed var(--line-soft); }
+    .rstep:last-child { border-bottom: 0; }
+    .rstep b { color: var(--gold); font-family: var(--serif); font-size: 17px; flex-shrink: 0; }
+    .rstep p { font-size: 13.5px; color: var(--muted); }
+    .mk-odds { margin-top: 20px; }
+    .mk-odds .odds-table { box-shadow: none; }
+    @media (max-width: 900px) { .reveal-steps { grid-template-columns: 1fr; } }
+    .type-row { display: flex; gap: 40px; flex-wrap: wrap; margin-top: 18px; align-items: baseline; }
+    @media (max-width: 900px) { .mk-cover { grid-template-columns: 1fr; } .mk-cols { grid-template-columns: 1fr; } .mk-imgs { grid-template-columns: 1fr 1fr; } .dd { grid-template-columns: 1fr; } }
+    @media print {
+      .site-head, .site-foot, .no-print { display: none !important; }
+      body { background: #fff; }
+      .mk-section, .mk-cover { box-shadow: none; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body data-page="mediakit" data-no-gate>
+  <header class="site-head"></header>
+
+  <main>
+    <section class="shell" style="padding-top:44px">
+      <div class="mk-cover">
+        <div>
+          <span class="eyebrow">Creator Media Kit · 2026</span>
+          <h1 class="display" style="font-size:clamp(38px,4.6vw,58px);margin:14px 0 18px">Every box holds<br><em>something real.</em></h1>
+          <p class="lede" style="font-size:15px">Covet is the unboxing house: luxury mystery boxes where every pull is a real, guaranteed-authentic piece (fragrance, bags, beauty, jewelry), shipped free or sold back on the spot. We publish verifiable odds on every box, and we pay creators on every box their followers ever open.</p>
+          <p class="micro" style="margin-top:18px">covet.gg/creators · @covet.gg <em>(handles are placeholders until launch)</em></p>
+        </div>
+        <div class="imgwrap"><img src="assets/kv-giftbox.png" alt="The Covet box" style="width:100%;border-radius:20px;box-shadow:var(--shadow)" /><span class="dchip">covet.gg</span></div>
+      </div>
+
+      <div class="mk-section">
+        <span class="eyebrow">What we are</span>
+        <h2>Real, in a world of <em>dupes.</em></h2>
+        <p style="max-width:70ch;color:var(--muted)">Your audience has been burned: dupes, fakes, "inspired by." Covet only ships pieces that are guaranteed authentic and verified before they ever reach her: fragrance, bags, beauty, jewelry. Every pull ships free or sells back instantly to a balance she can transfer to her bank. A dupe has never touched a Covet box and never will, and that promise is the whole brand.</p>
+        <div class="mk-cols">
+          <div class="mk-card"><div class="mk-num">0</div><b>Dupes, ever</b><p>Verified authentic before listing, every single piece. If it's in a Covet box, it's real, guaranteed in writing.</p></div>
+          <div class="mk-card"><div class="mk-num">\$10+</div><b>Charms to handbags</b><p>Boxes for every audience: \$10 charm and beauty boxes, everyday fragrance, up to the four-figure grail boxes where vintage Chanel and Birkins live. Whatever your niche, there is a box your followers can actually afford, and one they will dream about.</p></div>
+          <div class="mk-card"><div class="mk-num">Free</div><b>Every single day</b><p>A free box every day, her pick of two, with real pulls, plus 5 free giveaway entries just for showing up. Your followers can start without spending a dollar, which makes your code an easy yes.</p></div>
+        </div>
+      </div>
+
+      <div class="mk-section">
+        <span class="eyebrow">The deal</span>
+        <h2>You earn on every box, <em>forever.</em></h2>
+        <p style="max-width:70ch;color:var(--muted)">Your code gives new signups $5 off their first box of $25+. Everyone who joins with it is yours for good: you earn a cut of every cash box they open, for as long as they open boxes. Not the first purchase. Every purchase.</p>
+        <table class="mk-tiers">
+          <tr><th>Tier</th><th>Unlocks at</th><th>Your cut</th><th>Extras</th></tr>
+          <tr><td><b>It Girl</b></td><td>First referral</td><td>0.5% of every box</td><td>Your own code + live stats page</td></tr>
+          <tr><td><b>Icon</b></td><td>50 referrals</td><td>1% of every box</td><td>Free box at every 50 referrals · direct bank transfers</td></tr>
+          <tr><td><b>Covet Girl</b></td><td>250 referrals</td><td>2% of every box</td><td>Your own collab box at 3% · your code gifts a giveaway entry</td></tr>
+        </table>
+        <p class="micro" style="margin-top:14px">Paid in Covet credit, claimable to balance anytime. Earnings accrue on referrals' cash opens for the life of the account, never on credit spend or refunds.</p>
+      </div>
+
+      <div class="mk-section">
+        <span class="eyebrow">Ready to post</span>
+        <h2>Your templates, <em>ready to go.</em></h2>
+        <p style="max-width:70ch;color:var(--muted)">Post-ready and sized for the platform. The code pill is left blank on purpose: type your own code over the dashed line in Stories, TikTok text, or any editor. The offer on the code templates is $5 off a first box over $25.</p>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:24px">
+          <figure style="margin:0;flex:0 0 200px">
+            <div class="imgwrap"><img src="assets/template-story-code-blank-1080x1920.png" alt="" style="width:200px;border-radius:14px;display:block;box-shadow:var(--shadow-soft)" /></div>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin-top:8px">Your code · story · 1080×1920</figcaption>
+          </figure>
+          <figure style="margin:0;flex:0 0 230px">
+            <div class="imgwrap"><img src="assets/template-feed-code-blank-1080x1350.png" alt="" style="width:230px;border-radius:14px;display:block;box-shadow:var(--shadow-soft)" /></div>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin-top:8px">Your code · feed · 1080×1350</figcaption>
+          </figure>
+          <figure style="margin:0;flex:0 0 200px">
+            <div class="imgwrap"><img src="assets/template-story-dailybox-1080x1920.png" alt="" style="width:200px;border-radius:14px;display:block;box-shadow:var(--shadow-soft)" /></div>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin-top:8px">Free daily box · 1080×1920</figcaption>
+          </figure>
+          <figure style="margin:0;flex:0 0 200px">
+            <div class="imgwrap"><img src="assets/template-story-giveaway-1080x1920.png" alt="" style="width:200px;border-radius:14px;display:block;box-shadow:var(--shadow-soft)" /></div>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin-top:8px">Weekly giveaway · 1080×1920</figcaption>
+          </figure>
+          <figure style="margin:0;flex:0 0 200px">
+            <div class="imgwrap"><img src="assets/template-story-blank-1080x1920.png" alt="" style="width:200px;border-radius:14px;display:block;box-shadow:var(--shadow-soft)" /></div>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin-top:8px">Blank · story · for any promo</figcaption>
+          </figure>
+          <figure style="margin:0;flex:0 0 230px">
+            <div class="imgwrap"><img src="assets/template-feed-blank-1080x1350.png" alt="" style="width:230px;border-radius:14px;display:block;box-shadow:var(--shadow-soft)" /></div>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin-top:8px">Blank · feed · for any promo</figcaption>
+          </figure>
+        </div>
+        <div class="mk-card" style="margin-top:20px">
+          <b>Print your code on them</b>
+          <p style="margin-bottom:12px">Type your code and download both code templates with it printed on the line.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <input id="persoCode" maxlength="12" placeholder="YOURCODE" style="padding:12px 18px;border-radius:100px;border:1px solid var(--line);font-family:inherit;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;outline:none;width:170px" />
+            <button class="btn btn-gold" style="padding:12px 22px;font-size:10.5px" onclick="personalizeTemplates()">Personalize</button>
+            <span id="persoLinks" style="display:flex;gap:10px;flex-wrap:wrap"></span>
+          </div>
+        </div>
+        <div class="mk-card" style="margin-top:14px"><b>Caption starters</b><p>"she never pays retail ♥ my code = $5 off your first box over $25" · "a free box every single day, no purchase, no catch · covet.gg" · "this week's giveaway: a vintage chanel classic flap, 5 free entries daily"</p></div>
+      </div>
+
+      <div class="mk-section">
+        <span class="eyebrow">Ready to post · video</span>
+        <h2>Two ads, <em>ready to go.</em></h2>
+        <p style="max-width:70ch;color:var(--muted)">Both are 1080×1920-ready (9:16) with covet.gg watermarked throughout and the big domain end card. Personalized code versions are coming; for now, add your code as a text sticker when you post, or pin it in a comment.</p>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;margin-top:24px">
+          <figure style="margin:0;flex:0 0 240px">
+            <video src="assets/creator-video-cartoon.mp4" controls muted playsinline style="width:240px;border-radius:16px;display:block;box-shadow:var(--shadow-soft)"></video>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin:8px 0 10px">"Never a dupe" · 10s · 9:16</figcaption>
+            <a class="btn btn-gold" style="width:100%;padding:12px 10px;font-size:10.5px" href="assets/creator-video-cartoon.mp4" download="covet-never-a-dupe.mp4">Download video</a>
+          </figure>
+          <figure style="margin:0;flex:0 0 240px">
+            <video src="assets/creator-video-spin.mp4" controls muted playsinline style="width:240px;border-radius:16px;display:block;box-shadow:var(--shadow-soft)"></video>
+            <figcaption style="font-size:10.5px;color:var(--faint);margin:8px 0 10px">The spin + giveaway · 10s · 9:16</figcaption>
+            <a class="btn btn-gold" style="width:100%;padding:12px 10px;font-size:10.5px" href="assets/creator-video-spin.mp4" download="covet-spin-giveaway.mp4">Download video</a>
+          </figure>
+        </div>
+      </div>
+
+      <div class="mk-section">
+        <span class="eyebrow">House rules</span>
+        <h2>Say it <em>right.</em></h2>
+        <div class="dd">
+          <div class="do">
+            <h4>Always</h4>
+            <ul>
+              <li>Say "box", "unbox", "pull", "reveal", "wishlist"</li>
+              <li>Disclose the partnership: #ad or #covetpartner in the caption, said out loud if it's sponsored</li>
+              <li>Show real results, including the small pulls: honesty is the brand</li>
+              <li>Mention the instant buyback and free shipping</li>
+              <li>Say it loud: guaranteed authentic, never a dupe</li>
+              <li>18+ audience only</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mk-section">
+        <span class="eyebrow">Brand kit</span>
+        <h2>Make it look like <em>us.</em></h2>
+        <div class="type-row">
+          <span style="font-family:var(--serif);font-size:34px;font-weight:440">Fraunces <span style="font-style:italic;color:var(--gold)">for headlines</span></span>
+          <span style="font-size:15px;font-weight:600">Inter for everything else</span>
+        </div>
+        <div class="swatches">
+          <div class="sw"><i style="background:#e02d56"></i><span>Cherry · #E02D56</span></div>
+          <div class="sw"><i style="background:#ff5f85"></i><span>Bright · #FF5F85</span></div>
+          <div class="sw"><i style="background:#fff7f3;border-bottom:1px solid var(--line-soft)"></i><span>Cream · #FFF7F3</span></div>
+          <div class="sw"><i style="background:#fdeee9;border-bottom:1px solid var(--line-soft)"></i><span>Blush · #FDEEE9</span></div>
+          <div class="sw"><i style="background:#29192b"></i><span>Ink · #29192B</span></div>
+        </div>
+        <div class="mk-imgs">
+          <figure><div class="imgwrap"><img src="assets/kv-giftbox.png" alt="" /><span class="dchip">covet.gg</span></div><figcaption>Key visual · the box</figcaption></figure>
+          <figure><div class="imgwrap"><img src="assets/kv-reveal.png" alt="" /><span class="dchip">covet.gg</span></div><figcaption>The reveal</figcaption></figure>
+          <figure><div class="imgwrap"><img src="assets/kv-flatlay.png" alt="" /><span class="dchip">covet.gg</span></div><figcaption>Unboxing flat lay</figcaption></figure>
+          <figure><div class="imgwrap"><img src="assets/kv-hands.png" alt="" /><span class="dchip">covet.gg</span></div><figcaption>UGC reference</figcaption></figure>
+        </div>
+        <p class="micro" style="margin-top:14px">All assets in this kit are cleared for your Covet content. The domain tag is a placeholder until launch. Logo files and additional crops on request.</p>
+      </div>
+
+      <p class="micro no-print" style="text-align:center;padding-bottom:40px">Print or save as PDF from your browser: File → Print → Save as PDF. Header and footer drop out automatically.</p>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    /* draws the typed code onto the blank line of both code templates,
+       then offers the personalized PNGs as downloads */
+    function personalizeTemplates() {
+      const code = (document.getElementById("persoCode").value || "").trim().toUpperCase().slice(0, 12);
+      if (code.length < 2) { document.getElementById("persoCode").focus(); return; }
+      const SPECS = [
+        { src: "assets/template-story-code-blank-1080x1920.png", x: 642, y: 1276, px: 56, name: "covet-story-" + code + ".png", label: "Story PNG" },
+        { src: "assets/template-feed-code-blank-1080x1350.png", x: 618, y: 1176, px: 46, name: "covet-feed-" + code + ".png", label: "Feed PNG" },
+      ];
+      const host = document.getElementById("persoLinks");
+      host.innerHTML = "";
+      SPECS.forEach((spec) => {
+        const img = new Image();
+        img.onload = () => {
+          const cv = document.createElement("canvas");
+          cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+          const ctx = cv.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          ctx.font = "800 " + spec.px + "px Inter, sans-serif";
+          ctx.fillStyle = "#d92747";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "alphabetic";
+          ctx.fillText(code, spec.x, spec.y);
+          const a = document.createElement("a");
+          a.className = "btn btn-ghost";
+          a.style.cssText = "padding:12px 18px;font-size:10.5px";
+          a.textContent = "⬇ " + spec.label;
+          a.download = spec.name;
+          a.href = cv.toDataURL("image/png");
+          host.appendChild(a);
+        };
+        img.src = spec.src;
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modal gallery · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+</head>
+<body data-page="modals" data-no-gate>
+  <header class="site-head"></header>
+
+  <main>
+    <section class="page-head" style="padding-bottom:36px">
+      <div class="shell">
+        <span class="eyebrow">Internal · prototype</span>
+        <h1 class="display">Modal <em>gallery.</em></h1>
+        <p class="lede">Every popup state in the flow, demoed with mock data. These are the same live components used across the site.</p>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="gallery-grid">
+        <div class="gallery-card">
+          <h3>Pull reveal · result</h3>
+          <p>Fires after the reel settles. Confetti, rarity glow, share row, and every path forward.</p>
+          <button class="btn btn-ghost" onclick="demoResult()">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Instant buyback · confirm</h3>
+          <p>The repurchase offer with the exact credit amount, before anything is final.</p>
+          <button class="btn btn-ghost" onclick="openSellModal('oldmoney','br540_70')">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Age &amp; state gate</h3>
+          <p>Blocks first entry until age and eligibility are confirmed. Locked, no dismiss.</p>
+          <button class="btn btn-ghost" onclick="openGateModal(true)">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Transfer to bank</h3>
+          <p>Balance out to the original payment method. Amount, destination, confirmation.</p>
+          <button class="btn btn-ghost" onclick="openWithdrawModal()">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Weekly giveaway</h3>
+          <p>Prize, entry count, her entries, and the no-purchase-necessary line.</p>
+          <button class="btn btn-ghost" onclick="openGiveawayModal()">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Share → entry confirmed</h3>
+          <p>Fires after she posts a pull. Entry number plus a nudge back to the giveaway.</p>
+          <button class="btn btn-ghost" onclick="sharePull('TikTok','Baccarat Rouge 540')">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Stock-out resolution</h3>
+          <p>Fires when ops can't fulfill a pull: substitute, full-value credit, or the quiet refund link. Credit auto-applies after 5 days.</p>
+          <button class="btn btn-ghost" onclick="openStockoutModal('Baccarat Rouge 540', 245, 45, ['delinaex','aventus100g'])">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Sign in / sign up</h3>
+          <p>Email or Apple/Google. Sign-up carries the 18+ and Terms agreement line.</p>
+          <button class="btn btn-ghost" onclick="openAuthModal('in')">Sign in</button>
+          <button class="btn btn-ghost" onclick="openAuthModal('up')">Sign up</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Identity check · one time</h3>
+          <p>Gates the free daily box and bank transfers until she verifies once. Hands off to the KYC partner.</p>
+          <button class="btn btn-ghost" onclick="localStorage.removeItem('covet_kyc_ok');requireKyc(() => {})">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Creator W-9</h3>
+          <p>Blocks creator payouts crossing $600/year until a W-9 is on file with the tax partner. 1099s go out each January.</p>
+          <button class="btn btn-ghost" onclick="localStorage.removeItem('covet_w9_ok');openW9Modal()">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Giveaway winner</h3>
+          <p>The Sunday moment. Ship the prize free and insured, or take the credit offer set when the giveaway was created.</p>
+          <button class="btn btn-ghost" onclick="openGiveawayWinModal('Chanel Classic Flap', 5900, 4100)">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Pick your variant</h3>
+          <p>One popup for anything that comes in versions: sizes, shades, colors. Asked before a variant item ships.</p>
+          <button class="btn btn-ghost" onclick="openVariantModal('SKIMS Soft Lounge Set', ['XS','S','M','L','XL'])">Sizes</button>
+          <button class="btn btn-ghost" onclick="openVariantModal('Charlotte Tilbury Lipstick', ['Pillow Talk','Walk of No Shame','Red Carpet Red'])">Shades</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Shipping address</h3>
+          <p>Collected on her first ship, saved and editable everywhere after.</p>
+          <button class="btn btn-ghost" onclick="openAddressModal()">Preview</button>
+        </div>
+        <div class="gallery-card">
+          <h3>Add funds</h3>
+          <p>The + button flow. Amount presets, instant credit, always transferable.</p>
+          <button class="btn btn-ghost" onclick="openAddFundsModal()">Preview</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    function demoResult() {
+      const kase = getCase("oldmoney");
+      const drop = kase.drops.find((d) => d.id === "br540_70");
+      openResultModal(kase, drop, { onShip: "shipDemo()", onSell: "openSellModal('oldmoney','br540_70')" });
+    }
+    function shipDemo() {
+      openModal(`
+        <span class="eyebrow">Shipping · free</span>
+        <h2>On its way soon</h2>
+        <p class="modal-sub">Ships free with tracking within 5 business days. Pieces over $500 go insured with signature on delivery.</p>
+        <div class="modal-actions"><button class="btn btn-gold" onclick="closeModal()">Done</button></div>
+      `);
+    }
+  </script>
+</body>
+</html>

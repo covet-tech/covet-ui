@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ops · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+  <style>
+    .ops-tabs { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
+    .ops-tab {
+      padding: 10px 22px; border-radius: 100px;
+      border: 1px solid var(--line); background: #fff; color: var(--muted);
+      font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+    .ops-tab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .ops-tab[disabled] { opacity: 0.45; cursor: not-allowed; }
+    .ops-stats { display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 26px; }
+    .ops-stat b { display: block; font-family: var(--serif); font-size: 26px; font-weight: 440; }
+    .ops-stat span { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+    .ord {
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+      background: #fff;
+      border: 1px solid var(--line-soft);
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      padding: 16px 22px;
+      margin-bottom: 12px;
+    }
+    .ord.done { opacity: 0.55; }
+    .sla { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .sla.green { background: #4ca86a; box-shadow: 0 0 8px rgba(76,168,106,0.6); }
+    .sla.amber { background: #e8a94e; box-shadow: 0 0 8px rgba(232,169,78,0.6); }
+    .sla.red { background: var(--gold); box-shadow: 0 0 8px rgba(224,45,86,0.6); animation: slaPulse 1.2s infinite alternate; }
+    @keyframes slaPulse { to { opacity: 0.4; } }
+    .ord-art { width: 44px; display: flex; justify-content: center; flex-shrink: 0; }
+    .ord-who { width: 250px; flex-shrink: 0; }
+    .ord-who b { display: block; font-family: var(--serif); font-weight: 470; font-size: 15px; line-height: 1.2; }
+    .ord-who span { font-size: 11px; color: var(--muted); }
+    .ord-cost { flex: 1; min-width: 190px; font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .ord-cost b { color: var(--ink); }
+    .best-price { color: #2c8a4b; font-weight: 700; }
+    .ord-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ord-actions .btn { padding: 11px 18px; font-size: 10.5px; }
+    .ord-status { font-size: 11px; font-weight: 700; color: #2c8a4b; }
+    .tab-pane { display: none; }
+    .tab-pane.on { display: block; }
+    .flag-chip, .kyc-chip {
+      font-size: 9.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 11px; border-radius: 100px; flex-shrink: 0;
+    }
+    .flag-chip { color: var(--gold); background: var(--gold-dim); }
+    .kyc-chip { color: #2c8a4b; background: rgba(76, 168, 106, 0.12); }
+    .kyc-chip.warn { color: #b07c1e; background: rgba(232, 169, 78, 0.16); }
+    .tier-chip { font-size: 9.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: var(--bg2); padding: 4px 11px; border-radius: 100px; flex-shrink: 0; }
+    .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4ca86a; margin-left: 6px; box-shadow: 0 0 8px rgba(76,168,106,0.7); animation: slaPulse 1.4s infinite alternate; }
+    .avat { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright)); color: #fff;
+      font-family: var(--serif); font-size: 18px; display: flex; align-items: center; justify-content: center; }
+    .u-stats { flex: 1; min-width: 260px; font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .u-stats b { color: var(--ink); }
+    .tx-panel {
+      background: var(--bg); border: 1px solid var(--line-soft); border-top: 0;
+      border-radius: 0 0 18px 18px; padding: 8px 24px 12px; margin: 0 6px 12px;
+    }
+    .tx-row {
+      display: grid; grid-template-columns: 1fr auto 110px; gap: 16px; align-items: center;
+      font-size: 12.5px; color: var(--ink);
+      padding: 8px 0; border-bottom: 1px dashed var(--line-soft);
+    }
+    .tx-row:last-child { border-bottom: 0; }
+    .tx-row b { text-align: right; font-variant-numeric: tabular-nums; }
+    .sup-grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: start; }
+    @media (max-width: 900px) { .sup-grid { grid-template-columns: 1fr; } }
+    .ticket {
+      background: #fff; border: 1px solid var(--line-soft); border-radius: 16px;
+      box-shadow: var(--shadow-soft); padding: 14px 18px; margin-bottom: 10px; cursor: pointer;
+      transition: transform 0.3s var(--spring), border-color 0.25s;
+    }
+    .ticket:hover { transform: translateY(-2px); }
+    .ticket.sel { border-color: var(--gold); box-shadow: 0 10px 30px var(--gold-dim); }
+    .ticket b { display: block; font-family: var(--serif); font-weight: 470; font-size: 14.5px; }
+    .ticket span { font-size: 11px; color: var(--muted); }
+    .t-status { float: right; font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; }
+    .t-status.open { color: var(--gold); background: var(--gold-dim); }
+    .t-status.waiting { color: #b07c1e; background: rgba(232,169,78,0.16); }
+    .t-status.resolved { color: #2c8a4b; background: rgba(76,168,106,0.12); }
+    .chatpane { background: #fff; border: 1px solid var(--line-soft); border-radius: 20px; box-shadow: var(--shadow-soft); padding: 22px 24px; min-height: 420px; display: flex; flex-direction: column; }
+    .chat-head { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px dashed var(--line-soft); }
+    .chat-msgs { flex: 1; overflow-y: auto; max-height: 380px; padding: 16px 4px; display: flex; flex-direction: column; gap: 10px; }
+    .msg { max-width: 78%; padding: 10px 16px; border-radius: 16px; font-size: 13px; line-height: 1.5; }
+    .msg.them { align-self: flex-start; background: var(--bg2); color: var(--ink); border-bottom-left-radius: 4px; }
+    .msg.me { align-self: flex-end; background: linear-gradient(120deg, var(--gold), var(--gold-bright)); color: #fff; border-bottom-right-radius: 4px; }
+    .msg small { display: block; font-size: 9.5px; opacity: 0.65; margin-top: 3px; }
+    .chat-input { display: flex; gap: 10px; padding-top: 14px; border-top: 1px dashed var(--line-soft); }
+    .chat-input input { flex: 1; padding: 12px 18px; border-radius: 100px; border: 1px solid var(--line); font-family: inherit; font-size: 13px; outline: none; }
+    .chat-input input:focus { border-color: var(--gold); }
+  </style>
+</head>
+<body data-page="admin" data-no-gate>
+  <header class="site-head"></header>
+
+  <main>
+    <section class="page-head" style="padding-bottom:32px">
+      <div class="shell">
+        <span class="eyebrow">Internal · Covet Ops</span>
+        <h1 class="display" id="opsTitle">Fulfillment <em>queue.</em></h1>
+        <p class="lede" id="opsLede">Every "Ship it" lands here. Route each order to the API or fulfill it yourself when you can source it cheaper. Rows age green → amber → red against the shipping promise; untouched rows auto-route to the API at 24h.</p>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="ops-stats">
+        <div class="ops-stat"><b id="opPending">0</b><span>Pending</span></div>
+        <div class="ops-stat"><b id="opSaved">$0</b><span>Saved vs API today</span></div>
+        <div class="ops-stat"><b>34%</b><span>Avg margin this week</span></div>
+        <div class="ops-stat"><b>$4,120</b><span>Wallet liabilities held</span></div>
+      </div>
+
+      <div class="ord" style="align-items:center">
+        <div style="flex:1">
+          <b style="font-family:var(--serif);font-size:17px">Site event theme</b>
+          <p class="micro" style="margin-top:4px">Reskins the whole site for a holiday: the gift reveals recolor, themed bits fall across every page, and giveaway entries rename (santas, pumpkins, clovers). Flip it back to None the morning after.</p>
+        </div>
+        <div class="field" style="margin:0;width:190px"><label>Theme</label>
+          <select id="thSel">
+            <option value="">None · signature pink</option>
+            <option value="christmas">Christmas</option>
+            <option value="halloween">Halloween</option>
+            <option value="stpatricks">St. Patrick's Day</option>
+          </select>
+        </div>
+        <button class="btn btn-gold" onclick="thApply()">Apply</button>
+      </div>
+
+      <div class="ord" style="align-items:center">
+        <div style="flex:1">
+          <b style="font-family:var(--serif);font-size:17px">Maintenance mode</b>
+          <p class="micro" style="margin-top:4px">Pauses the whole storefront behind a "be right back" page while you fix or restock. Balances, shelves, and streaks are untouched; the admin panel stays reachable. In production this is a server flag, so reveals already in motion finish before the curtain drops.</p>
+        </div>
+        <div class="field" style="margin:0;flex:0 0 280px"><label>Message (optional)</label><input id="mtMsg" placeholder="Restocking the shelves, back in a bit ♥" /></div>
+        <button class="btn btn-gold" id="mtBtn" onclick="mtToggle()">Pause the site</button>
+      </div>
+
+      <div class="ops-tabs" id="opsTabs">
+        <button class="ops-tab on" data-pane="ship">Shipments</button>
+        <button class="ops-tab" data-pane="buyback">Buybacks</button>
+        <button class="ops-tab" data-pane="withdraw">Withdrawals · KYC</button>
+        <button class="ops-tab" data-pane="boxes">Boxes</button>
+        <button class="ops-tab" data-pane="stats">Stats</button>
+        <button class="ops-tab" data-pane="giveaway">Giveaway</button>
+        <button class="ops-tab" data-pane="creators">Creators</button>
+        <button class="ops-tab" data-pane="users">Users</button>
+        <button class="ops-tab" data-pane="support">Support <span class="live-dot"></span></button>
+      </div>
+
+      <div class="tab-pane on" id="pane-ship">
+        <div id="queue"></div>
+        <p class="micro" style="margin-top:18px">"Fulfill via API" places the supplier order and attaches tracking automatically. "Manual" records your source and tracking number. "Credit" credits her balance instead of shipping.</p>
+      </div>
+
+      <div class="tab-pane" id="pane-buyback">
+        <div id="bbFeed"></div>
+        <p class="micro" style="margin-top:18px">Every accepted buyback is an order you never had to fulfill. Watch for heavy cyclers: many buybacks plus a withdrawal request is the pattern worth a second look.</p>
+      </div>
+
+      <div class="tab-pane" id="pane-withdraw">
+        <div id="wdQueue"></div>
+        <p class="micro" style="margin-top:18px">You never approve routine payments. Deposits and purchases are fully automatic, and verified users auto-pay transfers under $500 with no review. Only three things wait here for your click: an account's first-ever withdrawal, flagged accounts, and transfers of $500 or more. Creator earnings are the exception to the exception: once a creator is verified, their earnings payouts auto-pay at any amount, since commission money was already vetted when it accrued and carries no chargeback risk. Their first payout still gets your eyes once.</p>
+      </div>
+
+      <div class="tab-pane" id="pane-boxes">
+        <div class="ord" style="align-items:center">
+          <div style="flex:1">
+            <b style="font-family:var(--serif);font-size:17px">Instant buyback dial</b>
+            <p class="micro" style="margin-top:4px">What we offer on paid-box pulls, as a % of what WE source the item for (supplier cost in production, sourcing-class estimate in the demo). At 100% a sell-back costs you exactly a restock. Start lean while cash is tight, then turn it up: richer offers drive sell-backs and the credit re-spends at your edge. The free-rares dial covers rare pulls from free boxes, offered near our fulfillment cost since shipping would cost us 100% anyway. Neither dial touches free-box penny commons or items with an explicit buyback price.</p>
+          </div>
+          <div class="field" style="margin:0;width:120px"><label>Paid boxes %</label>
+            <input id="bbRate" type="number" min="40" max="95" step="1" oninput="bbExample()" />
+          </div>
+          <div class="field" style="margin:0;width:120px"><label>Free rares %</label>
+            <input id="bbFreeRate" type="number" min="50" max="100" step="1" oninput="bbExample()" />
+          </div>
+          <div class="ord-cost" id="bbEx"></div>
+          <button class="btn btn-gold" onclick="bbSave()">Apply</button>
+        </div>
+
+        <div class="ord" style="align-items:center">
+          <div style="flex:1">
+            <b style="font-family:var(--serif);font-size:17px">Preset boxes</b>
+            <p class="micro" style="margin-top:4px">Every box on the site, editable. The starter boxes are placeholders; edit any of them (or author new ones) and your version replaces it. Odds must total 100 and the EV meter must sit in the green band before Save unlocks.</p>
+          </div>
+          <button class="btn btn-gold" onclick="bxNew()">+ New box</button>
+        </div>
+
+        <div class="ord" id="bxForm" style="display:none;flex-direction:column;align-items:stretch;gap:14px">
+          <div class="addr-row">
+            <div class="field" style="flex:2;margin:0"><label>Box name</label><input id="bxName" placeholder="The Cherry Girl Box" /></div>
+            <div class="field" id="bxPriceField" style="flex:1;margin:0"><label>Price $</label><input id="bxPrice" type="number" min="5" placeholder="30" oninput="bxCalc()" /></div>
+            <div class="field" id="bxRateField" style="flex:1;margin:0"><label>Buyback offer</label><select id="bxRateMode" onchange="bxCalc()"><option value="cost" selected>80% of our cost</option><option value="value">65% of shown value</option></select></div>
+            <div class="field" id="bxSellField" style="flex:1;margin:0"><label>Sell-back %</label><input id="bxSell" type="number" step="5" min="0" max="90" value="50" oninput="bxCalc()" /></div>
+            <div class="field" style="flex:1;margin:0"><label>Tint</label><input id="bxTint" type="color" value="#f4a9bc" style="height:42px;padding:4px" /></div>
+          </div>
+          <div class="field" style="margin:0"><label>Blurb</label><input id="bxBlurb" placeholder="One line of why she wants this box." maxlength="120" /></div>
+          <div class="field" style="margin:0;position:relative">
+            <label>Add items · search the catalog</label>
+            <input id="bxSearch" placeholder="Type to search… (dtc items belong in tails only)" oninput="bxSearchRender()" autocomplete="off" />
+            <div id="bxResults" class="bx-results"></div>
+          </div>
+          <div id="bxRows"></div>
+          <div class="ord-cost" id="bxMeter" style="line-height:1.9"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost" onclick="bxSolve()">Auto-balance odds</button>
+            <span class="info-tip" data-tip="Starts every item from a rarity seed (signature 12 · reserve 6 · archive 2 · grail 1) so commons dominate and grails stay thin. For priced boxes it then tilts odds toward or away from the expensive items, over ~80 tries, until the buyback EV lands on target (45% of price in cost mode, 80% in value mode) and rounds to exactly 100. It makes the box solvent; shape the feel yourself after.">?</span>
+            <button class="btn btn-ghost" id="bxCuteBtn" onclick="bxCutePrice()">Suggest cute price</button>
+            <span class="info-tip" id="bxCuteTip" data-tip="Prices backward from margin: takes the box's cost EV (each item's cost to us × its odds, summed) and divides by 0.65, so our expected cost is 65% of the price, a ~35% gross margin. Then rounds UP to a shelf-looking number: next $2 under $40, $5 under $100, $10 under $300, $25 above. Never rounds down, so cuteness only adds margin.">?</span>
+            <button class="btn btn-gold" id="bxSaveBtn" disabled onclick="bxSave()">Save & publish</button>
+            <button class="btn btn-quiet" onclick="document.getElementById('bxForm').style.display='none'">Cancel</button>
+          </div>
+        </div>
+
+        <div class="field" style="margin:0 0 10px"><input id="bxFilter" placeholder="Filter boxes…" oninput="bxListRender()" autocomplete="off" /></div>
+        <div id="bxList"></div>
+
+        <div class="ord" style="align-items:center;margin-top:26px">
+          <div style="flex:1">
+            <b style="font-family:var(--serif);font-size:17px">Daily free boxes</b>
+            <p class="micro" style="margin-top:4px">The boxes in the daily free rotation. Edit items, odds, and buyback offers, turn any off, or add a fresh one to swap the rotation; the home page shows whatever is on. Free boxes have no price, so Save only needs odds totaling 100.</p>
+          </div>
+          <button class="btn btn-ghost" id="dailyMasterBtn" onclick="dailyMasterToggle()">Pause the whole program</button>
+          <button class="btn btn-gold" onclick="dailyNew()">+ New daily box</button>
+        </div>
+        <div id="dailyList"></div>
+
+        <div class="ord" style="align-items:center;margin-top:26px">
+          <div style="flex:1">
+            <b style="font-family:var(--serif);font-size:17px">The Shop</b>
+            <p class="micro" style="margin-top:4px">Buy-now storefront, linked from the footer. Add any catalog or custom item and set its shop price. Anchor rule: shop prices sit AT OR ABOVE the item's shown market value, or the box value story collapses. All sales final; damaged or wrong arrivals always made right.</p>
+          </div>
+        </div>
+        <div class="field" style="margin:0 0 10px;position:relative">
+          <input id="shSearch" placeholder="Search items to add to the shop…" oninput="shSearchRender()" autocomplete="off" />
+          <div id="shResults" class="bx-results"></div>
+        </div>
+        <div id="shopList"></div>
+
+        <div class="ord" style="align-items:center;margin-top:26px">
+          <div style="flex:1">
+            <b style="font-family:var(--serif);font-size:17px">Homepage hero cards</b>
+            <p class="micro" style="margin-top:4px">The three product cards floating out of the hero gift box, and the second set they rotate to. Pick the photo and edit the name and the little tag bubble under it; "hot" makes the bubble pink.</p>
+          </div>
+          <button class="btn btn-ghost" onclick="hcReset()">Reset to default</button>
+          <button class="btn btn-gold" onclick="hcSave()">Save cards</button>
+        </div>
+        <div id="hcEditor"></div>
+
+        <div class="ord" style="align-items:center;margin-top:26px">
+          <div style="flex:1">
+            <b style="font-family:var(--serif);font-size:17px">Item catalog</b>
+            <p class="micro" style="margin-top:4px">Find any item across every box. Edit its shown value when the market moves, pause it while restocking (it can't be pulled, so nobody needs crediting), or remove it for good (the box's remaining odds re-balance to 100).</p>
+          </div>
+          <button class="btn btn-gold" onclick="toggleManForm()">+ New custom item</button>
+        </div>
+        <div class="ord" id="manForm" style="display:none;flex-direction:column;align-items:stretch;gap:10px">
+          <p class="micro">For grail and marketing items no supplier API stocks. You fulfill these by hand (Amazon, StockX, boutique). Create it once and it shows up in the box builder search like any catalog item; keep its odds tiny and its cost honest. Rarity tier lives on the box, not the item: you pick it per row when you build each box.</p>
+          <div class="addr-row">
+            <div class="field" style="flex:1;margin:0"><label>House</label><input id="mfHouse" placeholder="Gucci" /></div>
+            <div class="field" style="flex:1.4;margin:0"><label>Item</label><input id="mfName" placeholder="GG Marmont Small" /></div>
+          </div>
+          <div class="addr-row">
+            <div class="field" style="flex:1;margin:0"><label>Shown value $</label><input id="mfValue" type="number" min="1" /></div>
+            <div class="field" style="flex:1;margin:0"><label>Our cost $</label><input id="mfCost" type="number" min="1" /></div>
+            <div class="field" style="flex:1;margin:0"><label>Buyback $</label><input id="mfBB" type="number" min="0" step="0.5" placeholder="what we offer" /></div>
+            <div class="field" style="flex:1;margin:0"><label>Stock</label><input id="mfStock" type="number" min="0" step="1" placeholder="unlimited" /></div>
+            <div class="field" style="flex:1;margin:0"><label>Type</label><select id="mfKind"><option value="">fragrance</option><option value="bag">bag</option><option value="accessory">accessory</option><option value="beauty">beauty</option><option value="jewelry">jewelry</option><option value="clothes">clothes</option></select></div>
+          </div>
+          <div class="addr-row" style="align-items:center">
+            <label for="mfImg" style="display:flex;align-items:center;gap:12px;flex:1;padding:14px 16px;border:1px dashed var(--line);border-radius:14px;cursor:pointer">
+              <span id="mfImgThumb" style="width:44px;height:44px;border-radius:10px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:18px;background-size:cover;background-position:center">📷</span>
+              <span style="flex:1">
+                <b style="font-size:12.5px" id="mfImgLabel">Product photo</b>
+                <span class="micro" style="display:block" id="mfImgHint">PNG or JPG, square looks best. Stored by the backend in production; the demo shows placeholder art.</span>
+              </span>
+              <span class="btn btn-ghost" style="pointer-events:none">Upload</span>
+            </label>
+            <input id="mfImg" type="file" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="mfImgPreview(this)" />
+          </div>
+          <div class="addr-row" style="align-items:center">
+            <label class="micro" style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="mfShop" onchange="document.getElementById('mfShopPrice').style.display = this.checked ? '' : 'none'" /> Also sell it in the Boutique</label>
+            <div class="field" id="mfShopPrice" style="display:none;flex:0 0 170px;margin:0"><label>Boutique price $</label><input id="mfShopP" type="number" min="1" placeholder="auto cute price" /></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-gold" onclick="icCreateItem()">Create item</button>
+            <button class="btn btn-quiet" onclick="toggleManForm()">Cancel</button>
+          </div>
+        </div>
+        <div class="field" style="margin:0 0 10px"><input id="icSearch" placeholder="Search items…" oninput="icRender()" autocomplete="off" /></div>
+        <div id="icList"></div>
+        <div id="icRemoved"></div>
+      </div>
+
+      <div class="tab-pane" id="pane-stats">
+        <div style="display:flex;gap:8px;margin-bottom:22px">
+          <button class="ops-tab" id="stp-day" onclick="stRender('day')">Today</button>
+          <button class="ops-tab on" id="stp-week" onclick="stRender('week')">This week</button>
+          <button class="ops-tab" id="stp-month" onclick="stRender('month')">This month</button>
+        </div>
+        <div class="ops-stats" id="stCards"></div>
+        <div class="ord" style="display:block">
+          <b style="font-family:var(--serif);font-size:16px">Revenue and profit, last 30 days</b>
+          <span class="micro" style="margin-left:10px">full bar revenue · solid green profit · your selected window is bright, the rest dims</span>
+          <div id="stChart" style="display:flex;align-items:flex-end;gap:3px;height:150px;margin-top:16px"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px"><span class="micro" id="stChartL"></span><span class="micro">today</span></div>
+        </div>
+        <div class="ord" style="display:block">
+          <b style="font-family:var(--serif);font-size:16px">Where the money moved</b>
+          <div id="stFlows" style="margin-top:10px"></div>
+        </div>
+        <div class="ord" style="display:block">
+          <b style="font-family:var(--serif);font-size:16px">Top boxes</b>
+          <div id="stBoxes" style="margin-top:10px"></div>
+        </div>
+        <p class="micro" style="margin-top:16px">Demo numbers, shaped to the real economics (roughly 21% net after the free program). In production this tab reads the event stream, so every figure here reconciles to transaction ids.</p>
+      </div>
+
+      <div class="tab-pane" id="pane-giveaway">
+        <div class="ord" style="align-items:flex-start">
+          <div style="flex:1;min-width:240px">
+            <div class="ops-stat"><b id="gwPrize">·</b><span>This week's prize</span></div>
+            <p class="micro" style="margin-top:10px">Draws Sunday midnight ET · winner announced in the live feed and by email</p>
+          </div>
+          <div class="ops-stat"><b>12,480</b><span>Entries</span></div>
+          <div class="ops-stat"><b>1,942</b><span>Entrants</span></div>
+          <div class="ops-stat"><b>$9,214</b><span>Opened by entrants</span></div>
+          <div class="ord-actions">
+            <button class="btn btn-gold" id="gwDraw" onclick="drawWinner()">Draw winner</button>
+            <button class="btn btn-ghost" onclick="toggleNewGw()">+ Create next giveaway</button>
+          </div>
+        </div>
+        <div class="ord" id="gwNew" style="display:none">
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+            <b style="font-family:var(--serif);font-size:16px">Next giveaway</b>
+            <div class="addr-row">
+              <div class="field" style="flex:2;margin:0"><label>Prize</label><input id="ngPrize" placeholder="A vintage Lady Dior Mini" /></div>
+              <div class="field" style="flex:1;margin:0"><label>Market value $</label><input id="ngValue" type="number" placeholder="4800" oninput="ngValueCheck()" /></div>
+              <div class="field" style="flex:1;margin:0"><label>Credit offer $</label><input id="ngCredit" type="number" placeholder="3400" /></div>
+              <div class="field" style="flex:1;margin:0"><label>Draw date</label><input id="ngDate" type="date" /></div>
+            </div>
+            <p class="micro" id="ngWarn" style="display:none;color:var(--gold)">Heads up: prizes of $5,000 or more require NY registration and bonding filed 30 days before launch, and FL 7 days before. Keep it under $5,000 or plan the filings.</p>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-gold" onclick="saveNewGw()">Schedule giveaway</button>
+              <button class="btn btn-quiet" onclick="toggleNewGw()">Cancel</button>
+            </div>
+          </div>
+        </div>
+        <div id="gwQueue"></div>
+        <div class="ord"><div class="ord-cost" style="line-height:2">
+          Entry sources this week:<br>
+          <b>7,910</b> from opens ($1 = 1) · <b>2,830</b> from daily claims · <b>1,375</b> from giveaway posts · <b>365</b> from shared pulls
+        </div></div>
+        <div id="gwPast"></div>
+      </div>
+
+      <div class="tab-pane" id="pane-creators">
+        <div id="crList"></div>
+        <p class="micro" style="margin-top:18px">Earnings accrue on referrals' cash opens only. Approving a claim moves it to the creator's balance as credit.</p>
+      </div>
+
+      <div class="tab-pane" id="pane-users">
+        <div style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap"><input id="userSearch" type="search" placeholder="Search users…" oninput="renderUsers()" style="padding:12px 20px;border-radius:100px;border:1px solid var(--line);font-family:inherit;font-size:13px;outline:none;width:260px" /><input id="txnSearch" type="search" placeholder="Look up a transaction #…" oninput="txnLookup()" style="padding:12px 20px;border-radius:100px;border:1px solid var(--line);font-family:inherit;font-size:13px;outline:none;width:250px" /></div>
+        <div id="txnResult"></div>
+        <div id="userList"></div>
+        <p class="micro" style="margin-top:18px">Lifetime opens vs buybacks is the pattern to watch: heavy buyback share plus a withdrawal request earns the ⚑ automatically in production.</p>
+      </div>
+
+      <div class="tab-pane" id="pane-support">
+        <div class="sup-grid">
+          <div id="ticketList"></div>
+          <div class="chatpane" id="chatPane"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    const ORDERS = [
+      { uid: "o1", dropId: "classicflap", who: "Priya S. · Austin, TX",  box: "The Arm Candy Box",  api: 4450, stock: null, age: "red",   note: "26h old · auto-routes in 0h" },
+      { uid: "o2", dropId: "br540_70",   who: "Mia K. · Miami, FL",     box: "The Old Money Box", api: 172,  stock: null, age: "amber", note: "14h old" },
+      { uid: "o3", dropId: "kayali10",   who: "Ava R. · Columbus, OH",  box: "The It Girl Box",   api: 9.4,  stock: 7.1,  age: "green", note: "2h old" },
+      { uid: "o4", dropId: "lipbutter",  who: "Anonymous · Denver, CO", box: "The Vanity Box",    api: 11.2, stock: 8.5,  age: "green", note: "1h old" },
+      { uid: "o5", dropId: "lespecs",    who: "Elena K. · Phoenix, AZ", box: "The Off Duty Box", api: 22,  stock: null, age: "green", note: "40m old" },
+    ];
+    let savedToday = 0;
+    function fulfill(uid, mode) {
+      const row = document.getElementById(uid);
+      const o = ORDERS.find(x => x.uid === uid);
+      if (mode === "api") {
+        row.querySelector(".ord-actions").innerHTML = `<span class="ord-status">Sent to supplier · tracking pending</span>`;
+      } else if (mode === "manual") {
+        if (o.stock != null) { savedToday += o.api - o.stock; }
+        row.querySelector(".ord-actions").innerHTML = `<span class="ord-status">Fulfilling manually · add tracking when shipped</span>`;
+      } else if (mode === "credit") {
+        const d = allDrops().find(x => x.id === o.dropId);
+        row.querySelector(".ord-actions").innerHTML = `<span class="ord-status" style="color:var(--gold)">Credited ${money(d.value)} to her balance</span>`;
+      } else {
+        row.querySelector(".ord-actions").innerHTML = `<span class="ord-status" style="color:var(--muted)">On hold</span>`;
+      }
+      row.classList.add("done");
+      renderStats();
+    }
+    /* sold-out flow: pick which items she's offered as substitutes.
+       Suggestions = same category, equal-or-greater value, in stock. */
+    let soSel = [];
+    function soldOut(uid) {
+      const o = ORDERS.find((x) => x.uid === uid);
+      const d = allDrops().find((x) => x.id === o.dropId) || bxCatalog.get(o.dropId);
+      soSel = [];
+      window._soBase = d;
+      openModal(`
+        <span class="eyebrow">Sold out · ${d.house} ${d.name} · ${money(d.value)}</span>
+        <h2>Pick her substitute options</h2>
+        <p class="modal-sub" style="max-width:44ch">Choose up to 3 items of equal or greater value. She gets a popup: pick a substitute, take the full ${money(d.value)} as credit, or a quiet refund. No answer in 5 days auto-credits.</p>
+        <input class="claim-input" id="soSearch" placeholder="Search the whole catalog…" oninput="soRender()" />
+        <div id="soList" style="max-height:250px;overflow-y:auto;text-align:left"></div>
+        <div class="modal-actions">
+          <button class="btn btn-gold" id="soSend" disabled onclick="soSend('${uid}')">Send her the choice</button>
+          <button class="btn btn-quiet" onclick="closeModal()">Cancel</button>
+        </div>
+        <p class="micro after-note">Only offer what you can actually source today. Suggestions below are same-category, equal-or-up value.</p>
+      `, { style: "width:min(560px,94vw)" });
+      soRender();
+    }
+    function soCandidates() {
+      const d = window._soBase;
+      const q = (document.getElementById("soSearch").value || "").trim().toLowerCase();
+      if (q.length >= 2) {
+        return [...bxCatalog.values()].filter((x) => x.id !== d.id && !x.paused && x.stock !== 0 && (x.house + " " + x.name).toLowerCase().includes(q)).slice(0, 8);
+      }
+      return [...bxCatalog.values()]
+        .filter((x) => x.id !== d.id && !x.paused && x.stock !== 0 && (x.kind || "") === (d.kind || "") && x.value >= d.value)
+        .sort((a, b) => a.value - b.value).slice(0, 6);
+    }
+    function soToggle(id) {
+      if (soSel.includes(id)) soSel = soSel.filter((x) => x !== id);
+      else if (soSel.length < 3) soSel.push(id);
+      document.getElementById("soSend").disabled = !soSel.length;
+      soRender();
+    }
+    function soRender() {
+      document.getElementById("soList").innerHTML = soCandidates().map((x) => {
+        const on = soSel.includes(x.id);
+        return `<div class="ord" style="padding:10px 14px;cursor:pointer;${on ? "border-color:var(--gold);background:var(--gold-dim, #fdeef2);" : ""}" onclick="soToggle('${x.id}')">
+          <span class="ord-art" style="width:34px">${productArt(x, 28)}</span>
+          <div class="ord-who" style="flex:1"><b>${x.house} ${x.name}</b><span>${money(x.value)} shown · our cost ~${money(costOf(x))}${x.manual ? ` · manual · ${x.stock != null ? x.stock + " in stock" : "∞"}` : ""}</span></div>
+          <span class="ord-status" style="${on ? "color:var(--gold)" : ""}">${on ? "♥ offered" : "offer"}</span>
+        </div>`;
+      }).join("") || `<p class="micro" style="padding:12px">Nothing matches. Try the search.</p>`;
+    }
+    function soSend(uid) {
+      const o = ORDERS.find((x) => x.uid === uid);
+      const d = window._soBase;
+      const names = soSel.map((id) => { const x = bxCatalog.get(id); return x.house + " " + x.name; }).join(" / ");
+      const boxPrice = (CASES.find((c) => c.name === o.box) || {}).price || 45;
+      const subsArg = JSON.stringify(soSel).replace(/"/g, "&quot;");
+      closeModal();
+      const row = document.getElementById(uid);
+      row.querySelector(".ord-actions").innerHTML =
+        `<span class="ord-status" style="color:var(--gold)">Sold out · she's choosing: ${names} · or full credit</span>
+         <button class="btn btn-quiet" onclick='openStockoutModal("${d.name}", ${d.value}, ${boxPrice}, ${subsArg})'>Preview her popup</button>`;
+      row.classList.add("done");
+      renderStats();
+    }
+
+    function renderStats() {
+      document.getElementById("opPending").textContent = document.querySelectorAll("#pane-ship .ord:not(.done)").length;
+      document.getElementById("opSaved").textContent = money(savedToday);
+    }
+
+    /* ---------- buybacks ---------- */
+    const BUYBACKS = [
+      { dropId: "marmont",   who: "Elena K. · Phoenix, AZ",   credit: 714, when: "26m ago" },
+      { dropId: "delina75",  who: "Sofia M. · Nashville, TN", credit: 150, when: "1h ago" },
+      { dropId: "santal15",  who: "Ava R. · Columbus, OH",    credit: 31,  when: "1h ago", flag: "4th buyback today" },
+      { dropId: "kayali10",  who: "Anonymous · Queens, NY",   credit: 14,  when: "2h ago" },
+      { dropId: "lipbutter", who: "Priya S. · Austin, TX",    credit: 16,  when: "3h ago" },
+      { dropId: "lespecs",   who: "Nia B. · Charlotte, NC",   credit: 26,  when: "4h ago" },
+    ];
+    function renderBuybacks() {
+      document.getElementById("bbFeed").innerHTML = BUYBACKS.map(b => {
+        const d = allDrops().find(x => x.id === b.dropId);
+        return `<div class="ord">
+          <span class="ord-art">${productArt(d, 34)}</span>
+          <div class="ord-who"><b>${d.house} ${d.name}</b><span>${b.who} · ${b.when}</span></div>
+          <div class="ord-cost">Credited <b>${money(b.credit)}</b> · market ${money(d.value)} · never fulfilled</div>
+          ${b.flag ? `<span class="flag-chip">⚑ ${b.flag}</span>` : ""}
+        </div>`;
+      }).join("");
+    }
+
+    /* ---------- withdrawals + KYC ---------- */
+    const WITHDRAWALS = [
+      { uid: "w1", who: "Jade W. · Miami, FL",    amount: 320, method: "PayPal",           kyc: "verified",                 age: "1d old" },
+      { uid: "w2", who: "user_4492 · Dallas, TX", amount: 62,  method: "Venmo via PayPal", kyc: "first withdrawal · no ID", age: "3h old", needs: true },
+      { uid: "w3", who: "Mia K. · Miami, FL",     amount: 84,  method: "PayPal",           kyc: "verified",                 age: "2h old" },
+      { uid: "w4", who: "user_7038 · Newark, NJ", amount: 480, method: "PayPal",           kyc: "ID under review",          age: "40m old", needs: true },
+    ];
+    function wdAct(uid, act) {
+      const row = document.getElementById(uid);
+      const msg = act === "pay" ? `<span class="ord-status">Sent · PayPal payout on its way</span>`
+        : act === "id" ? `<span class="ord-status" style="color:#b07c1e">ID requested · she has 7 days</span>`
+        : `<span class="ord-status" style="color:var(--muted)">Denied · funds returned to balance</span>`;
+      row.querySelector(".ord-actions").innerHTML = msg;
+      row.classList.add("done");
+    }
+    function renderWithdrawals() {
+      document.getElementById("wdQueue").innerHTML = WITHDRAWALS.map(w => `
+        <div class="ord" id="${w.uid}">
+          <div class="ord-who" style="width:210px"><b>${money(w.amount)}</b><span>${w.who} · ${w.age}</span></div>
+          <div class="ord-cost">${w.method}</div>
+          <span class="kyc-chip ${w.needs ? "warn" : ""}">${w.kyc}</span>
+          <div class="ord-actions">
+            <button class="btn btn-gold" onclick="wdAct('${w.uid}','pay')">Approve &amp; send</button>
+            ${w.needs ? `<button class="btn btn-ghost" onclick="wdAct('${w.uid}','id')">Request ID</button>` : ""}
+            <button class="btn btn-quiet" onclick="wdAct('${w.uid}','deny')">Deny</button>
+          </div>
+        </div>`).join("");
+    }
+
+    /* ---------- stats ---------- */
+    /* deterministic demo series: same numbers every load, weekend-shaped */
+    const STATS_DAYS = (() => {
+      let x = 42;
+      const r = () => (x = (x * 1103515245 + 12345) % 2147483648) / 2147483648;
+      return Array.from({ length: 30 }, (_, i) => {
+        const dow = (i + 3) % 7, wknd = dow === 5 || dow === 6;
+        const opens = Math.round((wknd ? 31 : 22) + r() * 12);
+        const boxRev = Math.round(opens * (34 + r() * 12));
+        const shopRev = Math.round(Math.round(r() * (wknd ? 2 : 1.4)) * (110 + r() * 240));
+        const cogs = Math.round(boxRev * (0.63 + r() * 0.05) + shopRev * 0.78);
+        const freeCost = Math.round(105 + r() * 70);
+        const buyback = Math.round(boxRev * (0.30 + r() * 0.10));
+        const withdrawals = Math.round(buyback * (0.18 + r() * 0.10));
+        const deposits = Math.round(boxRev * (0.9 + r() * 0.25));
+        const signups = Math.round((wknd ? 21 : 13) + r() * 10);
+        return { opens, boxRev, shopRev, cogs, freeCost, buyback, withdrawals, deposits, signups };
+      });
+    })();
+    const ST_SPAN = { day: 1, week: 7, month: 30 };
+    function stRender(period = "week") {
+      const n = ST_SPAN[period];
+      ["day", "week", "month"].forEach((p) => document.getElementById("stp-" + p).classList.toggle("on", p === period));
+      const win = STATS_DAYS.slice(30 - n);
+      const sum = (f) => win.reduce((a, d) => a + f(d), 0);
+      const rev = sum((d) => d.boxRev + d.shopRev);
+      const cost = sum((d) => d.cogs + d.freeCost);
+      const profit = rev - cost;
+      const fmt = (v) => "$" + Math.round(v).toLocaleString();
+      document.getElementById("stCards").innerHTML = `
+        <div class="ops-stat"><b>${fmt(rev)}</b><span>Revenue</span></div>
+        <div class="ops-stat"><b>${fmt(cost)}</b><span>Cost · goods + free program</span></div>
+        <div class="ops-stat"><b style="color:${profit >= 0 ? "#2c8a4b" : "#c22a4c"}">${fmt(profit)}</b><span>Profit · ${rev ? Math.round(profit / rev * 100) : 0}% margin</span></div>
+        <div class="ops-stat"><b>${sum((d) => d.opens).toLocaleString()}</b><span>Paid opens</span></div>`;
+      const peak = Math.max(...STATS_DAYS.map((d) => d.boxRev + d.shopRev));
+      document.getElementById("stChart").innerHTML = STATS_DAYS.map((d, i) => {
+        const dayRev = d.boxRev + d.shopRev, dayP = dayRev - d.cogs - d.freeCost;
+        const inWin = i >= 30 - n;
+        return `<div class="info-tip" data-tip="${fmt(dayRev)} revenue · ${fmt(dayP)} profit · ${d.opens} opens" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;gap:0;border:0;background:none;width:auto;border-radius:0;font-size:0;cursor:default;opacity:${inWin ? 1 : 0.3}">
+          <div style="height:${Math.round((dayRev - Math.max(0, dayP)) / peak * 100)}%;background:var(--gold);border-radius:3px 3px 0 0"></div>
+          <div style="height:${Math.round(Math.max(0, dayP) / peak * 100)}%;background:#2c8a4b"></div>
+        </div>`;
+      }).join("");
+      const d0 = new Date(2026, 7, 25 - 29);
+      document.getElementById("stChartL").textContent = d0.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const flows = [
+        ["Box opens", fmt(sum((d) => d.boxRev)), "Revenue recognized when the roll lands. A paid sealed box on a shelf is deferred until she opens it."],
+        ["The Boutique", fmt(sum((d) => d.shopRev)), "Buy-now orders at listed prices. Balance applied there respends credit at full face value against ~78% cost."],
+        ["Deposits taken", fmt(sum((d) => d.deposits)), "Card money in. Runs above open revenue when wallets are filling, below when credit is being spent down."],
+        ["Buyback credit issued", fmt(sum((d) => d.buyback)), "A liability, not a cost. It becomes cost only when it respends (at box margin) or transfers out."],
+        ["Free daily program", fmt(sum((d) => d.freeCost)), "Your real marketing spend: credit and shipped rares from the daily boxes. Launch guideline $2.50 per open, tightening to $1.00."],
+        ["Transfers paid out", fmt(sum((d) => d.withdrawals)), "Bank and PayPal money out, after review rules. Kept deliberately: paid-out winners are the marketing."],
+        ["New signups", sum((d) => d.signups).toLocaleString(), "Accounts created. Watch this against the free program line for cost per signup."],
+      ];
+      document.getElementById("stFlows").innerHTML = flows.map(([k, v, tip]) =>
+        `<div class="tx-row"><span>${k} <span class="info-tip" data-tip="${tip}">?</span></span><b>${v}</b></div>`).join("");
+      const shares = [["The Heiress Box", 0.24, 27], ["The Arm Candy Box", 0.19, 24], ["The It Girl Box", 0.16, 22], ["The Coquette Box", 0.12, 19], ["The Date Night Box", 0.09, 21]];
+      const boxRevTot = sum((d) => d.boxRev);
+      document.getElementById("stBoxes").innerHTML = shares.map(([name, sh, mg]) =>
+        `<div class="tx-row"><span>${name}</span><span class="micro">${Math.round(sh * 100)}% of open revenue · ${mg}% margin</span><b>${fmt(boxRevTot * sh)}</b></div>`).join("");
+    }
+
+    /* ---------- event theme ---------- */
+    function thApply() {
+      const v = document.getElementById("thSel").value;
+      if (v) localStorage.setItem("covet_holiday", v);
+      else localStorage.removeItem("covet_holiday");
+      localStorage.removeItem("covet_real_photos"); /* photo mode retired; promos keep their real images */
+      location.reload();
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("thSel").value = holidayTheme();
+      mtRender();
+      stRender("week");
+    });
+
+    /* ---------- daily free boxes ---------- */
+    function dailyMasterToggle() {
+      const o = getDailyOverrides();
+      const today = new Date().toISOString().slice(0, 10);
+      o.pauseLog = o.pauseLog || [];
+      if (o.allOff) {
+        delete o.allOff;
+        const open = o.pauseLog.find((w) => !w.to);
+        if (open) open.to = today; /* pause window closes; those days are forgiven for streaks */
+      } else {
+        o.allOff = true;
+        o.pauseLog.push({ from: today });
+      }
+      localStorage.setItem(LS_DAILY_OVR, JSON.stringify(o));
+      location.reload();
+    }
+    function dailyListRender() {
+      const paused = dailyProgramPaused();
+      const mb = document.getElementById("dailyMasterBtn");
+      if (mb) {
+        mb.textContent = paused ? "Resume the whole program" : "Pause the whole program";
+        mb.className = paused ? "btn btn-gold" : "btn btn-ghost";
+      }
+      document.getElementById("dailyList").innerHTML = FREE_BOXES.map((b) => {
+        const ovr = getDailyOverrides();
+        const off = !!(ovr.off && ovr.off[b.id]);
+        const bbLine = b.drops.map((d) => d.bb != null ? money(d.bb) : "auto").join(" · ");
+        return `<div class="ord" ${off ? 'style="opacity:0.55"' : ""}>
+          <div class="ord-who" style="width:280px"><b>${b.name}</b><span>${b.drops.length} items · buybacks: ${bbLine}</span></div>
+          <div class="ord-cost">${off ? "OFF · hidden from the site" : "live on the home page"}</div>
+          <div class="ord-actions">
+            <button class="btn btn-ghost" onclick="dailyEdit('${b.id}')">Edit</button>
+            <button class="btn ${off ? "btn-gold" : "btn-quiet"}" onclick="dailyToggle('${b.id}')">${off ? "Turn on" : "Turn off"}</button>
+            ${DAILY_BUILTIN.includes(b.id) ? "" : `<button class="btn btn-quiet" onclick="dailyDelete('${b.id}')">✕</button>`}
+          </div>
+        </div>`;
+      }).join("");
+    }
+    function dailyToggle(id) {
+      const o = getDailyOverrides();
+      o.off = o.off || {};
+      if (o.off[id]) delete o.off[id]; else o.off[id] = true;
+      localStorage.setItem(LS_DAILY_OVR, JSON.stringify(o));
+      location.reload();
+    }
+    function bxFreeUi(on) {
+      ["bxPriceField", "bxRateField", "bxSellField", "bxCuteBtn", "bxCuteTip"].forEach((id) => {
+        document.getElementById(id).style.display = on ? "none" : "";
+      });
+    }
+    function dailyNew() {
+      bx = { editing: null, free: true, items: [] };
+      bxFreeUi(true);
+      const f = document.getElementById("bxForm");
+      f.style.display = "";
+      document.getElementById("bxName").value = "";
+      document.getElementById("bxPrice").value = 0;
+      document.getElementById("bxTint").value = "#c9a7e0";
+      document.getElementById("bxBlurb").value = "";
+      bxRowsRender(); bxCalc();
+      document.getElementById("bxName").focus();
+    }
+    function dailyDelete(id) {
+      if (!confirm("Delete this daily box for good? Built-in dailies can only be turned off, but this one is yours.")) return;
+      const o = getDailyOverrides();
+      if (o.boxes) delete o.boxes[id];
+      if (o.off) delete o.off[id];
+      localStorage.setItem(LS_DAILY_OVR, JSON.stringify(o));
+      location.reload();
+    }
+    const DAILY_BUILTIN = ["dailyscent", "dailyluck"];
+    function dailyEdit(id) {
+      const b = FREE_BOXES.find((x) => x.id === id);
+      for (const d of b.drops) if (!bxCatalog.has(d.id)) bxCatalog.set(d.id, d);
+      bx = { editing: id, free: true, items: b.drops.map((d) => ({ id: d.id, odds: d.odds, cost: d.cost, bb: d.bb, value: d.value })) };
+      bxFreeUi(true);
+      const f = document.getElementById("bxForm");
+      f.style.display = "";
+      document.getElementById("bxName").value = b.name;
+      document.getElementById("bxPrice").value = 0;
+      document.getElementById("bxTint").value = b.tint;
+      document.getElementById("bxBlurb").value = b.blurb;
+      bxRowsRender(); bxCalc();
+      f.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    /* ---------- the shop ---------- */
+    function shSave(list) {
+      localStorage.setItem(LS_SHOP, JSON.stringify(list));
+      shopListRender();
+    }
+    function shSearchRender() {
+      const q = document.getElementById("shSearch").value.trim().toLowerCase();
+      const host = document.getElementById("shResults");
+      if (q.length < 2) { host.innerHTML = ""; return; }
+      const have = new Set(getShopItems().map((x) => x.id));
+      const hits = [...bxCatalog.values()]
+        .filter((d) => !have.has(d.id) && (d.house + " " + d.name).toLowerCase().includes(q))
+        .slice(0, 6);
+      host.innerHTML = hits.map((d) =>
+        `<button class="bx-hit" onclick="shAdd('${d.id}')">${d.house} ${d.name} · shown $${d.value}${d.manual ? ' · <span style="color:#b07c1e">custom</span>' : ""}</button>`).join("");
+    }
+    function shAdd(id) {
+      const d = bxCatalog.get(id);
+      const list = getShopItems().slice();
+      /* default shop price: shown value nudged up to a cute number (anchor rule) */
+      const raw = d.value * 1.04;
+      const cute = raw < 100 ? Math.ceil(raw / 5) * 5 : raw < 500 ? Math.ceil(raw / 10) * 10 : Math.ceil(raw / 50) * 50;
+      list.push({ id, price: cute, cost: Math.round(bxCostGuess(d)) });
+      document.getElementById("shSearch").value = "";
+      document.getElementById("shResults").innerHTML = "";
+      shSave(list);
+    }
+    function shSetPrice(id) {
+      const v = parseFloat(document.getElementById("shp_" + id).value);
+      const c = parseFloat(document.getElementById("shc_" + id).value);
+      if (!v) return;
+      const list = getShopItems().map((x) => (x.id === id ? { ...x, price: v, ...(isNaN(c) ? {} : { cost: c }) } : x));
+      shSave(list);
+    }
+    function shRemove(id) {
+      shSave(getShopItems().filter((x) => x.id !== id));
+    }
+    function shopListRender() {
+      const host = document.getElementById("shopList");
+      if (!host) return;
+      host.innerHTML = getShopItems().map(({ id, price, cost }) => {
+        const d = bxCatalog.get(id);
+        if (!d) return "";
+        const c = cost != null ? cost : Math.round(bxCostGuess(d));
+        const profit = price - c;
+        const thin = profit < price * 0.2;
+        const below = price < d.value;
+        return `<div class="ord">
+          <span class="ord-art" style="width:36px">${productArt(d, 30)}</span>
+          <div class="ord-who" style="flex:1"><b>${d.house} ${d.name}</b><span>shown $${d.value} · profit <b style="color:${thin ? "#c22a4c" : "#3f9d63"}">$${profit}</b>${thin ? " ⚑ under the 20% floor" : ""}${below ? ' · <b style="color:#c22a4c">⚑ shop price below shown value, breaks the anchor</b>' : ""}</span></div>
+          <label class="micro">costs us $<input id="shc_${id}" type="number" min="0" value="${c}" style="width:74px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>
+          <label class="micro">shop $<input id="shp_${id}" type="number" min="1" value="${price}" style="width:84px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>
+          <div class="ord-actions">
+            <button class="btn btn-ghost" onclick="shSetPrice('${id}')">Save</button>
+            <button class="btn btn-quiet" onclick="shRemove('${id}')">✕</button>
+          </div>
+        </div>`;
+      }).join("") || `<div class="ord" style="opacity:0.6"><div class="ord-cost">Shop is empty. Search above to add pieces.</div></div>`;
+    }
+
+    /* ---------- homepage hero cards ---------- */
+    const HC_IMGS = [["hero-perfume", "perfume · roses"], ["hero-perfume2", "perfume · black"], ["hero-bag", "bag · floral"], ["hero-bag2", "bag · tan"], ["hero-watch", "watch"], ["hero-jewel", "bracelet"]];
+    const HC_DEFAULT = { sets: [
+      [{ img: "hero-perfume", name: "Coco Mademoiselle", tag: "In boxes now", hot: true },
+       { img: "hero-bag", name: "Ferragamo Studio Bag", tag: "The Handbag Box", hot: true },
+       { img: "hero-watch", name: "IWC Portugieser", tag: "The Heiress Box", hot: false }],
+      [{ img: "hero-jewel", name: "Diamond Tennis Bracelet", tag: "The Ice Box", hot: false },
+       { img: "hero-bag2", name: "Vintage Top Handle", tag: "The Handbag Box", hot: true },
+       { img: "hero-perfume2", name: "Coco Noir", tag: "The Parisian Box", hot: false }],
+    ]};
+    function hcCurrent() {
+      try { const o = JSON.parse(localStorage.getItem("covet_hero_cards")); if (o && o.sets) return o; } catch {}
+      return HC_DEFAULT;
+    }
+    function hcRender() {
+      const cur = hcCurrent();
+      document.getElementById("hcEditor").innerHTML = cur.sets.map((set, si) => `
+        <div class="rp-head" style="margin-top:${si ? 14 : 0}px">${si === 0 ? "Set one · shows first" : "Set two · rotates in"}</div>
+        ${set.map((c, ci) => `<div class="ord" style="gap:12px">
+          <img src="assets/${c.img}.png" id="hcPrev${si}${ci}" style="height:44px;width:auto;max-width:64px;object-fit:contain" />
+          <div class="field" style="margin:0;width:150px"><label>Photo</label>
+            <select id="hcImg${si}${ci}" onchange="document.getElementById('hcPrev${si}${ci}').src='assets/'+this.value+'.png'">
+              ${HC_IMGS.map(([v, l]) => `<option value="${v}" ${v === c.img ? "selected" : ""}>${l}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field" style="margin:0;flex:1"><label>Name</label><input id="hcName${si}${ci}" value="${c.name.replace(/"/g, "&quot;")}" maxlength="28" /></div>
+          <div class="field" style="margin:0;flex:1"><label>Tag bubble</label><input id="hcTag${si}${ci}" value="${c.tag.replace(/"/g, "&quot;")}" maxlength="26" /></div>
+          <label class="micro" style="white-space:nowrap"><input type="checkbox" id="hcHot${si}${ci}" ${c.hot ? "checked" : ""} /> hot</label>
+        </div>`).join("")}`).join("");
+    }
+    function hcSave() {
+      const sets = [0, 1].map((si) => [0, 1, 2].map((ci) => ({
+        img: document.getElementById(`hcImg${si}${ci}`).value,
+        name: document.getElementById(`hcName${si}${ci}`).value.trim().replace(/[<>&]/g, ""),
+        tag: document.getElementById(`hcTag${si}${ci}`).value.trim().replace(/[<>&]/g, ""),
+        hot: document.getElementById(`hcHot${si}${ci}`).checked,
+      })));
+      localStorage.setItem("covet_hero_cards", JSON.stringify({ sets }));
+      hcRender();
+    }
+    function hcReset() {
+      localStorage.removeItem("covet_hero_cards");
+      hcRender();
+    }
+
+    /* ---------- buyback dial ---------- */
+    function bbExample() {
+      const r = parseFloat(document.getElementById("bbRate").value);
+      const fr = parseFloat(document.getElementById("bbFreeRate").value);
+      if (!(r >= 40 && r <= 95) || !(fr >= 50 && fr <= 100)) { document.getElementById("bbEx").innerHTML = `paid 40-95 · free rares 50-100`; return; }
+      const dirty = r / 100 !== BUYBACK_RATE || fr / 100 !== FREE_RARE_RATE;
+      document.getElementById("bbEx").innerHTML =
+        `$79-cost item → paid-box offer <b>$${Math.floor(79 * r / 100)}</b> · free-rare offer <b>$${Math.floor(79 * fr / 100)}</b> (floored)` +
+        (dirty ? ` · <b style="color:#b07c1e">not applied yet</b>` : ` · live`);
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("bbRate").value = String(Math.round(BUYBACK_RATE * 100));
+      document.getElementById("bbFreeRate").value = String(Math.round(FREE_RARE_RATE * 100));
+      bbExample();
+    });
+    function bbSave() {
+      const r = Math.floor(parseFloat(document.getElementById("bbRate").value));
+      const fr = Math.floor(parseFloat(document.getElementById("bbFreeRate").value));
+      if (!(r >= 40 && r <= 95) || !(fr >= 50 && fr <= 100)) return;
+      localStorage.setItem("covet_buyback_rate", String(r));
+      localStorage.setItem("covet_free_rare_rate", String(fr));
+      location.reload(); /* rates apply when data.js boots */
+    }
+
+    /* ---------- box builder ---------- */
+    const LS_ADMIN_BOXES = "covet_admin_boxes";
+    let bx = { editing: null, items: [] };
+    const bxCatalog = (() => {
+      const seen = new Map();
+      for (const c of CASES) for (const d of c.drops) if (!seen.has(d.id)) seen.set(d.id, d);
+      for (const d of (typeof EXTRA_DROPS !== "undefined" ? EXTRA_DROPS : [])) if (!seen.has(d.id)) seen.set(d.id, d);
+      return seen;
+    })();
+    function bxGetBoxes() {
+      try { return JSON.parse(localStorage.getItem(LS_ADMIN_BOXES)) || []; } catch { return []; }
+    }
+    function bxNew(editId) {
+      bx = { editing: editId || null, items: [] };
+      bxFreeUi(false);
+      const f = document.getElementById("bxForm");
+      f.style.display = "";
+      document.getElementById("bxName").value = "";
+      document.getElementById("bxPrice").value = "";
+      document.getElementById("bxBlurb").value = "";
+      if (editId) {
+        const b = bxGetBoxes().find((x) => x.id === editId) || CASES.find((x) => x.id === editId);
+        if (b) {
+          document.getElementById("bxName").value = b.name;
+          document.getElementById("bxPrice").value = b.price;
+          document.getElementById("bxTint").value = b.tint;
+          document.getElementById("bxBlurb").value = b.blurb;
+          for (const d of b.drops) if (!bxCatalog.has(d.id)) bxCatalog.set(d.id, d);
+          bx.items = b.drops.map((d) => ({ id: d.id, odds: d.odds, cost: d.cost, value: d.value }));
+        }
+      }
+      bxRowsRender(); bxCalc();
+      document.getElementById("bxName").focus();
+    }
+    function bxSearchRender() {
+      const q = document.getElementById("bxSearch").value.trim().toLowerCase();
+      const host = document.getElementById("bxResults");
+      if (q.length < 2) { host.innerHTML = ""; return; }
+      const hits = [...bxCatalog.values()]
+        .filter((d) => !bx.items.some((i) => i.id === d.id))
+        .filter((d) => (d.house + " " + d.name).toLowerCase().includes(q))
+        .slice(0, 6);
+      host.innerHTML = hits.map((d) =>
+        `<button class="bx-hit" onclick="bxAdd('${d.id}')">${d.house} ${d.name} · $${d.value}${d.dtc ? ' · <span style="color:#b07c1e">dtc, tail only</span>' : ""}${d.manual ? ' · <span style="color:#b07c1e">custom, manual fulfillment</span>' : ""}</button>`).join("");
+    }
+    function toggleManForm() {
+      const el = document.getElementById("manForm");
+      el.style.display = el.style.display === "none" ? "" : "none";
+      if (el.style.display === "") document.getElementById("mfHouse").focus();
+    }
+    const LS_CUSTOM_ITEMS = "covet_custom_items";
+    function icCustomItems() {
+      try { return JSON.parse(localStorage.getItem(LS_CUSTOM_ITEMS)) || []; } catch { return []; }
+    }
+    for (const d of icCustomItems()) if (!bxCatalog.has(d.id)) bxCatalog.set(d.id, d);
+    function mfImgPreview(input) {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      document.getElementById("mfImgLabel").textContent = f.name;
+      document.getElementById("mfImgHint").textContent = "Looks good. The backend stores this with the item; the demo keeps placeholder art.";
+      const r = new FileReader();
+      r.onload = (e) => {
+        const t = document.getElementById("mfImgThumb");
+        t.style.backgroundImage = `url(${e.target.result})`;
+        t.textContent = "";
+      };
+      r.readAsDataURL(f);
+    }
+    function mfImgReset() {
+      const t = document.getElementById("mfImgThumb");
+      if (!t) return;
+      t.style.backgroundImage = ""; t.textContent = "📷";
+      document.getElementById("mfImgLabel").textContent = "Product photo";
+      document.getElementById("mfImgHint").textContent = "PNG or JPG, square looks best. Stored by the backend in production; the demo shows placeholder art.";
+      document.getElementById("mfImg").value = "";
+    }
+    function icCreateItem() {
+      const house = document.getElementById("mfHouse").value.trim();
+      const name = document.getElementById("mfName").value.trim();
+      const value = parseFloat(document.getElementById("mfValue").value);
+      const cost = parseFloat(document.getElementById("mfCost").value);
+      if (!house || !name || !value || !cost) return;
+      const id = "man_" + (house + name).toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 24);
+      const kind = document.getElementById("mfKind").value;
+      const d = { id, house, name, conc: "Off-catalog", size: "manual fulfillment",
+        value, cost, manual: true }; /* rarity is per-box, set in the builder row */
+      const bbv = parseFloat(document.getElementById("mfBB").value);
+      if (bbv >= 0) d.bb = bbv; /* explicit offer; blank = standard dial rate */
+      const st = parseInt(document.getElementById("mfStock").value, 10);
+      if (!isNaN(st)) d.stock = st; /* blank = unlimited (dtc/API-backed) */
+      if (kind) d.kind = kind;
+      const lib = icCustomItems().filter((x) => x.id !== id);
+      lib.push(d);
+      localStorage.setItem(LS_CUSTOM_ITEMS, JSON.stringify(lib));
+      bxCatalog.set(id, d);
+      if (document.getElementById("mfShop").checked) {
+        let sp = parseFloat(document.getElementById("mfShopP").value);
+        if (!sp) { const raw = value * 1.04; sp = raw < 100 ? Math.ceil(raw / 5) * 5 : raw < 500 ? Math.ceil(raw / 10) * 10 : Math.ceil(raw / 50) * 50; }
+        shSave(getShopItems().filter((x) => x.id !== id).concat([{ id, price: sp, cost }]));
+      }
+      document.getElementById("mfShop").checked = false;
+      document.getElementById("mfShopPrice").style.display = "none";
+      ["mfHouse", "mfName", "mfValue", "mfCost", "mfBB", "mfStock", "mfShopP"].forEach((x) => (document.getElementById(x).value = ""));
+      mfImgReset();
+      toggleManForm();
+      document.getElementById("icSearch").value = house;
+      icRender();
+    }
+    function icDeleteCustom(id) {
+      const d = bxCatalog.get(id);
+      if (!confirm(`Delete ${d.house} ${d.name} from your custom items? It also comes out of any box that holds it (remaining odds re-balance to 100).`)) return;
+      localStorage.setItem(LS_CUSTOM_ITEMS, JSON.stringify(icCustomItems().filter((x) => x.id !== id)));
+      const ov = getItemOverrides();
+      if (CASES.some((c) => c.drops.some((x) => x.id === id))) {
+        ov[id] = { ...(ov[id] || {}), removed: true, label: d.house + " " + d.name + " (custom)" };
+      }
+      icSaveOv(ov);
+    }
+
+    /* ---------- item catalog manager ---------- */
+    function icSaveOv(ov) {
+      localStorage.setItem(LS_ITEM_OVERRIDES, JSON.stringify(ov));
+      location.reload(); /* overrides apply when data.js boots */
+    }
+    function icBoxesOf(id) {
+      return CASES.filter((c) => c.drops.some((d) => d.id === id)).map((c) => c.short);
+    }
+    function icSetValue(id) {
+      const v = parseFloat(document.getElementById("icv_" + id).value);
+      if (!v) return;
+      const ov = getItemOverrides();
+      ov[id] = { ...(ov[id] || {}), value: v };
+      const bbEl = document.getElementById("icb_" + id);
+      if (bbEl) { /* custom item: buyback + stock save to the library + embedded copies */
+        const bbv = parseFloat(bbEl.value);
+        const stv = parseInt((document.getElementById("icst_" + id) || {}).value, 10);
+        const lib = icCustomItems();
+        const it = lib.find((x) => x.id === id);
+        if (it) {
+          it.value = v;
+          if (bbv >= 0) { it.bb = bbv; ov[id].bb = bbv; } else { delete it.bb; delete ov[id].bb; }
+          if (!isNaN(stv)) it.stock = stv; else delete it.stock;
+          localStorage.setItem(LS_CUSTOM_ITEMS, JSON.stringify(lib));
+        } else if (bbv >= 0) ov[id].bb = bbv;
+        if (stv === 0) ov[id].paused = true; /* out of stock: can't be pulled until restocked */
+      }
+      icSaveOv(ov);
+    }
+    function icPause(id, on) {
+      const ov = getItemOverrides();
+      ov[id] = { ...(ov[id] || {}), paused: on };
+      if (!on) delete ov[id].paused;
+      icSaveOv(ov);
+    }
+    function icRemove(id) {
+      const d = bxCatalog.get(id);
+      if (!confirm(`Remove ${d.house} ${d.name} from every box? Remaining odds in each box re-balance to 100. You can restore it below.`)) return;
+      const ov = getItemOverrides();
+      ov[id] = { ...(ov[id] || {}), removed: true, label: d.house + " " + d.name };
+      icSaveOv(ov);
+    }
+    function icRestore(id) {
+      const ov = getItemOverrides();
+      delete ov[id];
+      icSaveOv(ov);
+    }
+    function icRender() {
+      const q = document.getElementById("icSearch").value.trim().toLowerCase();
+      const host = document.getElementById("icList");
+      const ov = getItemOverrides();
+      if (q.length < 2) { host.innerHTML = ""; icRenderRemoved(); return; }
+      const hits = [...bxCatalog.values()]
+        .filter((d) => (d.house + " " + d.name).toLowerCase().includes(q))
+        .slice(0, 8);
+      host.innerHTML = hits.map((d) => {
+        const boxes = icBoxesOf(d.id);
+        const o = ov[d.id] || {};
+        return `<div class="ord">
+          <div class="ord-who" style="width:280px"><b>${d.house} ${d.name}${d.paused ? ' · <span style="color:#b07c1e">paused</span>' : ""}${d.manual ? " · manual" : ""}${o.value != null ? " · price edited" : ""}${d.manual && d.stock != null ? ` · <b style="color:${d.stock === 0 ? "#c22a4c" : "#b07c1e"}">${d.stock} in stock</b>` : ""}</b><span>${boxes.length ? "in: " + boxes.slice(0, 4).join(", ") + (boxes.length > 4 ? " +" + (boxes.length - 4) : "") : "wishlist pool only"}</span></div>
+          <label class="micro">shown $<input id="icv_${d.id}" type="number" min="1" value="${d.value}" style="width:80px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>
+          ${d.manual ? `<label class="micro">buyback $<input id="icb_${d.id}" type="number" min="0" step="0.5" value="${d.bb != null ? d.bb : ""}" placeholder="dial rate" style="width:80px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>` : ""}
+          ${d.manual ? `<label class="micro">stock<input id="icst_${d.id}" type="number" min="0" step="1" value="${d.stock != null ? d.stock : ""}" placeholder="∞" style="width:64px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>` : ""}
+          <div class="ord-actions">
+            <button class="btn btn-ghost" onclick="icSetValue('${d.id}')">Save price</button>
+            <button class="btn btn-ghost" onclick="icPause('${d.id}', ${d.paused ? "false" : "true"})">${d.paused ? "Resume" : "Pause"}</button>
+            ${d.manual ? `<button class="btn btn-quiet" onclick="icDeleteCustom('${d.id}')">Delete</button>` : `<button class="btn btn-quiet" onclick="icRemove('${d.id}')">Remove</button>`}
+          </div>
+        </div>`;
+      }).join("") || `<div class="ord" style="opacity:0.6"><div class="ord-cost">No items match.</div></div>`;
+      icRenderRemoved();
+    }
+    function icRenderRemoved() {
+      const ov = getItemOverrides();
+      const gone = Object.entries(ov).filter(([, o]) => o.removed);
+      document.getElementById("icRemoved").innerHTML = gone.length
+        ? `<div class="rp-head" style="margin-top:14px">Removed items</div>` + gone.map(([id, o]) => `
+          <div class="ord" style="opacity:0.75">
+            <div class="ord-who" style="width:280px"><b>${o.label || id}</b><span>removed from all boxes</span></div>
+            <div class="ord-actions"><button class="btn btn-ghost" onclick="icRestore('${id}')">Restore</button></div>
+          </div>`).join("")
+        : "";
+    }
+
+    function bxAdd(id) {
+      bx.items.push({ id, odds: 0 });
+      document.getElementById("bxSearch").value = "";
+      document.getElementById("bxResults").innerHTML = "";
+      bxRowsRender(); bxCalc();
+    }
+    /* our cost: supplier feed in production; sourcing-class estimate in the demo */
+    const bxCostGuess = costOf; /* shared with data.js: explicit cost, else sourcing class */
+    function bxRowsRender() {
+      document.getElementById("bxRows").innerHTML = bx.items.map((it, i) => {
+        const d = bxCatalog.get(it.id);
+        if (it.cost == null) it.cost = bxCostGuess(d);
+        if (it.value == null) it.value = d.value;
+        if (it.rarity == null) it.rarity = d.rarity || "reserve";
+        const rOpt = (r) => `<option value="${r}" ${it.rarity === r ? "selected" : ""}>${r}</option>`;
+        return `<div class="bx-row">
+          <span style="flex:1"><b>${d.house} ${d.name}</b>${d.dtc ? " · ⚑ dtc" : ""}${d.manual ? " · ⚑ manual fulfillment" : ""}</span>
+          <label class="micro">tier <select onchange="bx.items[${i}].rarity = this.value" style="padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px">${rOpt("signature")}${rOpt("reserve")}${rOpt("archive")}${rOpt("grail")}</select></label>
+          <label class="micro">shown $<input type="number" min="1" value="${it.value}" oninput="bx.items[${i}].value = parseFloat(this.value) || 0; bxCalc()" style="width:76px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>
+          <label class="micro">our cost $<input type="number" min="0" value="${it.cost}" oninput="bx.items[${i}].cost = parseFloat(this.value) || 0; bxCalc()" style="width:70px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>
+          <label class="micro">odds %<input type="number" step="0.1" min="0.1" max="80" value="${it.odds || ""}" oninput="bx.items[${i}].odds = parseFloat(this.value) || 0; bxCalc()" style="width:80px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>
+          ${bx.free ? `<label class="micro">buyback $<input type="number" min="0" step="0.25" value="${it.bb != null ? it.bb : (d.bb != null ? d.bb : "")}" placeholder="auto" oninput="bx.items[${i}].bb = this.value === '' ? null : parseFloat(this.value); bxCalc()" style="width:80px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px" /></label>` : ""}
+          <button class="btn btn-quiet" onclick="bx.items.splice(${i},1);bxRowsRender();bxCalc()">✕</button>
+        </div>`;
+      }).join("");
+    }
+    function bxCalc() {
+      const price = parseFloat(document.getElementById("bxPrice").value) || 0;
+      const mode = document.getElementById("bxRateMode").value;
+      const sum = bx.items.reduce((a, i) => a + (i.odds || 0), 0);
+      const val = (i) => (i.value != null ? i.value : bxCatalog.get(i.id).value);
+      const evRetail = bx.items.reduce((a, i) => a + val(i) * (i.odds || 0) / 100, 0);
+      const creditOf = (i) => {
+        const d = bxCatalog.get(i.id);
+        if (d.bb != null) return d.bb; /* explicit per-item offer */
+        return mode === "cost" ? (i.cost || 0) * 0.8 : (i.value != null ? i.value : d.value) * 0.65;
+      };
+      const evCredit = bx.items.reduce((a, i) => a + creditOf(i) * (i.odds || 0) / 100, 0);
+      const evCost = bx.items.reduce((a, i) => a + (i.cost || 0) * (i.odds || 0) / 100, 0);
+      const minV = bx.items.length ? Math.min(...bx.items.map(val)) : 0;
+      const okSum = Math.abs(sum - 100) < 0.11;
+      const okCredit = price && evCredit / price >= (mode === "cost" ? 0.35 : 0.60) && evCredit / price <= 0.95;
+      const dtcHot = bx.items.some((i) => bxCatalog.get(i.id).dtc && (i.odds || 0) > 2);
+      /* expected profit: shipped pulls cost fulfillment; sold-back pulls cost
+         credit that respends at this box's own cost ratio */
+      const sellP = (parseFloat(document.getElementById("bxSell").value) || 0) / 100;
+      const respendFactor = price ? evCost / price : 0.65;
+      const profitShip = price - evCost;
+      const profitSell = price - evCredit * respendFactor;
+      const profitExp = (1 - sellP) * profitShip + sellP * profitSell;
+      const okProfit = price && profitExp / price >= 0.20;
+      document.getElementById("bxMeter").innerHTML =
+        `Odds total <b style="color:${okSum ? "#3f9d63" : "#c22a4c"}">${sum.toFixed(1)}%</b> (needs 100)<br>
+         She sees: market value EV <b>$${evRetail.toFixed(0)}</b> · buyback EV <b style="color:${okCredit ? "#3f9d63" : "#c22a4c"}">$${evCredit.toFixed(0)}</b> (${price ? (evCredit / price * 100).toFixed(0) : 0}% of price)<br>
+         You see: cost EV <b>$${evCost.toFixed(0)}</b> · profit if she ships <b>$${profitShip.toFixed(0)}</b> · if she sells back <b>$${profitSell.toFixed(0)}</b><br>
+         <b style="color:${okProfit ? "#3f9d63" : "#c22a4c"};font-size:15px">Expected profit per open: $${profitExp.toFixed(2)} (${price ? (profitExp / price * 100).toFixed(0) : 0}% of price)</b> at ${(sellP * 100).toFixed(0)}% sell-back · floor 20% · cheapest shown $${minV}${dtcHot ? ' · <b style="color:#c22a4c">⚑ dtc item above 2%</b>' : ""}`;
+      if (bx.free) {
+        const avgCost = bx.items.reduce((a, i) => a + (i.cost || 0) * (i.odds || 0) / 100, 0);
+        const avgCredit = bx.items.reduce((a, i) => {
+          const d = bxCatalog.get(i.id);
+          const off = (i.bb != null) ? i.bb : (d.bb != null ? d.bb : buybackFor({ free: true }, d));
+          return a + off * (i.odds || 0) / 100;
+        }, 0);
+        const rich = avgCredit > 2.5 || avgCost > 10;
+        document.getElementById("bxMeter").innerHTML =
+          `Odds total <b style="color:${okSum ? "#3f9d63" : "#c22a4c"}">${sum.toFixed(1)}%</b> (needs 100)<br>
+           Worst case she ships everything: <b style="color:${avgCost > 10 ? "#c22a4c" : "inherit"}">$${avgCost.toFixed(2)}</b> per open <span class="info-tip" data-tip="Each item's odds × our sourcing cost, summed. The average cash cost per open if every pull shipped. A ceiling, not reality: before her first purchase she can only ever ship one free pull. Flags red over $10.">?</span> · everyone trades instead: <b style="color:${avgCredit > 2.5 ? "#c22a4c" : "inherit"}">$${avgCredit.toFixed(2)}</b> per open in credit <span class="info-tip" data-tip="Each item's odds × its buyback offer, summed. The average credit paid per open when she takes the trade, which the reveal popup steers her toward. This is your real daily marketing cost. Flags red over $2.50, the launch guideline; after the initial marketing push, tighten mid-tier offers and tail odds toward $1.00 per open.">?</span>${rich ? `<br><b style="color:#c22a4c">⚑ rich for a free box · guideline: credit under $2.50/open, ship-worst under $10</b>` : ""}`;
+        document.getElementById("bxSaveBtn").disabled = !(okSum && bx.items.length >= 2 && document.getElementById("bxName").value.trim());
+        return;
+      }
+      document.getElementById("bxSaveBtn").disabled = !(okSum && okCredit && okProfit && !dtcHot && bx.items.length >= 4 && document.getElementById("bxName").value.trim() && price >= 5);
+    }
+    function bxCutePrice() {
+      const mode = document.getElementById("bxRateMode").value;
+      const base = mode === "cost"
+        ? bx.items.reduce((a, i) => a + (i.cost || 0) * (i.odds || 0) / 100, 0) / 0.65 /* price ~ costEV/0.65: 35% margin before sellback upside */
+        : bx.items.reduce((a, i) => a + bxCatalog.get(i.id).value * 0.65 * (i.odds || 0) / 100, 0) / 0.8;
+      if (!base) return;
+      const raw = base;
+      const cute = raw < 40 ? Math.ceil(raw / 2) * 2 : raw < 100 ? Math.ceil(raw / 5) * 5 : raw < 300 ? Math.ceil(raw / 10) * 10 : Math.ceil(raw / 25) * 25;
+      document.getElementById("bxPrice").value = cute;
+      bxCalc();
+    }
+    function bxSolve() {
+      const price = parseFloat(document.getElementById("bxPrice").value) || 0;
+      if (bx.items.length < 2) return;
+      const seedOf = (i) => ({ signature: 12, reserve: 6, archive: 2, grail: 1 })[i.rarity || bxCatalog.get(i.id).rarity] || 6;
+      if (!price) {
+        /* no price yet: rough tier-shaped odds so "cute price" has something to chew on */
+        const w = bx.items.map(seedOf);
+        const sw = w.reduce((a, b) => a + b, 0);
+        let o = w.map((x) => Math.max(0.1, Math.round(x / sw * 1000) / 10));
+        o[o.indexOf(Math.max(...o))] += Math.round((100 - o.reduce((a, b) => a + b, 0)) * 10) / 10;
+        bx.items.forEach((i, j) => (i.odds = Math.round(o[j] * 10) / 10));
+        bxRowsRender(); bxCalc();
+        return;
+      }
+      const seedFor = (i) => ({ signature: 12, reserve: 6, archive: 2, grail: 1 })[i.rarity || bxCatalog.get(i.id).rarity] || 6;
+      let lo = -4, hi = 8, best = null;
+      for (let k = 0; k < 80; k++) {
+        const t = (lo + hi) / 2;
+        let w = bx.items.map((i) => { const d = bxCatalog.get(i.id); return seedFor(i) * Math.pow(d.value, -t); });
+        const sw = w.reduce((a, b) => a + b, 0);
+        let o = w.map((x) => Math.max(0.1, Math.round(x / sw * 1000) / 10));
+        const drift = Math.round((100 - o.reduce((a, b) => a + b, 0)) * 10) / 10;
+        o[o.indexOf(Math.max(...o))] += drift;
+        const mode = document.getElementById("bxRateMode").value;
+        const ev = mode === "cost"
+          ? bx.items.reduce((a, i, j) => a + (i.cost || 0) * 0.8 * o[j] / 100, 0) / price
+          : bx.items.reduce((a, i, j) => a + bxCatalog.get(i.id).value * 0.65 * o[j] / 100, 0) / price;
+        best = o;
+        const target = mode === "cost" ? 0.45 : 0.80;
+        if (Math.abs(ev - target) < 0.002) break;
+        if (ev > target) lo = t; else hi = t;
+      }
+      bx.items.forEach((i, j) => (i.odds = Math.round(best[j] * 10) / 10));
+      bxRowsRender(); bxCalc();
+    }
+    function bxSave() {
+      if (bx.free) {
+        if (!bx.editing) {
+          bx.editing = "dly_" + document.getElementById("bxName").value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 24);
+        }
+        const o = getDailyOverrides();
+        o.boxes = o.boxes || {};
+        o.boxes[bx.editing] = {
+          name: document.getElementById("bxName").value.trim(),
+          tint: document.getElementById("bxTint").value,
+          blurb: (document.getElementById("bxBlurb").value || "").replace(/[<>&]/g, ""),
+          drops: bx.items.map((i) => {
+            const d = { ...bxCatalog.get(i.id), odds: i.odds, cost: i.cost, rarity: i.rarity || bxCatalog.get(i.id).rarity || "reserve" };
+            if (i.value != null) d.value = i.value;
+            if (i.bb != null) d.bb = i.bb; else if (bxCatalog.get(i.id).bb == null) delete d.bb;
+            return d;
+          }),
+        };
+        localStorage.setItem(LS_DAILY_OVR, JSON.stringify(o));
+        location.reload();
+        return;
+      }
+      const name = document.getElementById("bxName").value.trim();
+      const short = name.replace(/^The /i, "").replace(/ Box$/i, "");
+      const id = bx.editing || ("adm_" + short.toLowerCase().replace(/[^a-z0-9]+/g, ""));
+      const orig = CASES.find((c) => c.id === id) || {};
+      const box = {
+        ...orig, id, numeral: orig.numeral || "★", name, short,
+        price: parseFloat(document.getElementById("bxPrice").value),
+        floorPct: 0,
+        tint: document.getElementById("bxTint").value,
+        blurb: (document.getElementById("bxBlurb").value || "Hand-built by the house.").replace(/[<>&]/g, ""),
+        buybackMode: document.getElementById("bxRateMode").value,
+        drops: bx.items.map((i) => ({ ...bxCatalog.get(i.id), odds: i.odds, cost: i.cost, rarity: i.rarity || bxCatalog.get(i.id).rarity || "reserve", ...(i.value != null ? { value: i.value } : {}) })),
+      };
+      const list = bxGetBoxes().filter((b) => b.id !== id);
+      list.push(box);
+      localStorage.setItem(LS_ADMIN_BOXES, JSON.stringify(list));
+      location.reload(); /* edits merge into CASES at boot */
+    }
+    function bxDelete(id) {
+      if (!confirm("Delete this box from the site?")) return;
+      localStorage.setItem(LS_ADMIN_BOXES, JSON.stringify(bxGetBoxes().filter((b) => b.id !== id)));
+      location.reload();
+    }
+    function bxListRender() {
+      const mine = new Set(bxGetBoxes().map((b) => b.id));
+      const q = ((document.getElementById("bxFilter") || {}).value || "").trim().toLowerCase();
+      const list = CASES.filter((c) => !q || c.name.toLowerCase().includes(q));
+      document.getElementById("bxList").innerHTML = list.map((b) => {
+        const ev = b.drops.reduce((a, d) => a + buybackFor(b, d) * d.odds / 100, 0) / (b.price || 1);
+        const authored = b.id.startsWith("adm_");
+        const status = authored ? "yours" : mine.has(b.id) ? "edited" : "placeholder";
+        return `<div class="ord">
+          <div class="ord-who" style="width:280px"><b>${b.name}</b><span>${status} · $${b.price} · ${b.drops.length} items</span></div>
+          <div class="ord-cost">credit EV ${(ev * 100).toFixed(0)}% of price</div>
+          <div class="ord-actions">
+            <button class="btn btn-ghost" onclick="bxNew('${b.id}')">Edit</button>
+            <a class="btn btn-ghost" href="case.html?c=${b.id}" target="_blank">View</a>
+            ${authored ? `<button class="btn btn-quiet" onclick="bxDelete('${b.id}')">✕</button>`
+              : mine.has(b.id) ? `<button class="btn btn-quiet" onclick="bxRevert('${b.id}')">Revert</button>` : ""}
+          </div>
+        </div>`;
+      }).join("") || `<div class="ord" style="opacity:0.6"><div class="ord-cost">No boxes match.</div></div>`;
+    }
+    function bxRevert(id) {
+      if (!confirm("Revert this box to its placeholder version? Your edits to it are discarded.")) return;
+      localStorage.setItem(LS_ADMIN_BOXES, JSON.stringify(bxGetBoxes().filter((b) => b.id !== id)));
+      location.reload();
+    }
+
+        /* ---------- giveaway ---------- */
+    const GW_QUEUE = [];
+    function toggleNewGw() {
+      const el = document.getElementById("gwNew");
+      el.style.display = el.style.display === "none" ? "" : "none";
+      if (el.style.display === "") {
+        /* default the draw date to next Sunday */
+        const d = new Date();
+        d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7));
+        document.getElementById("ngDate").value = d.toISOString().slice(0, 10);
+        document.getElementById("ngPrize").focus();
+      }
+    }
+    function ngValueCheck() {
+      const v = parseFloat(document.getElementById("ngValue").value || 0);
+      document.getElementById("ngWarn").style.display = v >= 5000 ? "" : "none";
+    }
+    function saveNewGw() {
+      const prize = document.getElementById("ngPrize").value.trim();
+      const value = parseFloat(document.getElementById("ngValue").value || 0);
+      const credit = parseFloat(document.getElementById("ngCredit").value || 0) || Math.floor(value * 0.7);
+      const date = document.getElementById("ngDate").value;
+      if (!prize || !value || !date) return;
+      GW_QUEUE.push({ prize, value, credit, date });
+      toggleNewGw();
+      document.getElementById("ngPrize").value = ""; document.getElementById("ngValue").value = ""; document.getElementById("ngCredit").value = "";
+      renderGwQueue();
+    }
+    function renderGwQueue() {
+      document.getElementById("gwQueue").innerHTML = GW_QUEUE.map((g, i) => `
+        <div class="ord">
+          <div class="ord-who" style="width:280px"><b>${g.prize}</b><span>scheduled · draws ${g.date}</span></div>
+          <div class="ord-cost">$${g.value.toLocaleString()} market value · credit offer $${(g.credit || 0).toLocaleString()}${g.value >= 5000 ? ' · <b style="color:var(--cherry, #e02d56)">needs NY/FL filings</b>' : " · no registration needed"}</div>
+          <div class="ord-actions">
+            <button class="btn btn-ghost" onclick='openGiveawayWinModal("${g.prize}", ${g.value}, ${g.credit || 0})'>Preview win popup</button>
+            <button class="btn btn-quiet" onclick="GW_QUEUE.splice(${i},1);renderGwQueue()">✕</button>
+          </div>
+        </div>`).join("");
+    }
+    function drawWinner() {
+      const name = TICKER_NAMES[Math.floor(Math.random() * TICKER_NAMES.length)];
+      confettiBurst();
+      document.getElementById("gwDraw").outerHTML = `<span class="ord-status">Winner: ${name} · drawn via random.org (signed) · notified by email · announce when she confirms</span>`;
+    }
+    function renderGiveaway() {
+      document.getElementById("gwPrize").textContent = GIVEAWAY.prize.replace(/^a /i, "");
+      document.getElementById("gwPast").innerHTML = [
+        ["Lena R.", "Lady Dior Mini, vintage", "last week"],
+        ["Carmen D.", "Baccarat Rouge 540 70ml", "two weeks ago"],
+      ].map(([who, prize, when]) => `
+        <div class="ord" style="opacity:0.65">
+          <div class="ord-who" style="width:210px"><b>${who}</b><span>won ${when}</span></div>
+          <div class="ord-cost">${prize} · delivered · posted her unboxing</div>
+        </div>`).join("");
+    }
+
+    /* ---------- users ---------- */
+    const USERS = [
+      { uid: "u1", name: "Jade W.",    where: "Miami, FL · joined May 2026",    opens: 9480, buyback: 41, balance: 612.40, entries: 480, kyc: true,  flag: null },
+      { uid: "u2", name: "Mia K.",     where: "Miami, FL · joined Jun 2026",    opens: 4820, buyback: 38, balance: 96.10,  entries: 214, kyc: true,  flag: null },
+      { uid: "u3", name: "Ava R.",     where: "Columbus, OH · joined Jul 2026", opens: 310,  buyback: 92, balance: 201.75, entries: 44,  kyc: false, flag: "heavy cycler" },
+      { uid: "u4", name: "Sofia M.",   where: "Nashville, TN · joined Jul 2026",opens: 1730, buyback: 51, balance: 12.20,  entries: 130, kyc: true,  flag: null, creator: true },
+      { uid: "u5", name: "user_4492",  where: "Dallas, TX · joined Aug 2026",   opens: 62,   buyback: 88, balance: 58.00,  entries: 12,  kyc: false, flag: "withdrawal pending, no KYC" },
+      { uid: "u6", name: "Elena K.",   where: "Phoenix, AZ · joined Aug 2026",  opens: 118,  buyback: 22, balance: 4.60,   entries: 26,  kyc: false, flag: null },
+    ];
+    const USER_TX = {
+      u1: [["Deposit", 500, "Aug 14"], ["Opened · Heiress Box", -1500, "Aug 14"], ["Buyback · Cartier Love", 3465, "Aug 14"], ["Withdrawal request", -320, "Aug 15"], ["Opened · Arm Candy Box", -250, "Aug 16"]],
+      u2: [["Deposit", 100, "Aug 12"], ["Opened · It Girl Box", -25, "Aug 12"], ["Buyback · Delina", 17, "Aug 12"], ["Creator claim", 96.40, "Aug 15"], ["Opened · Vanity Box", -30, "Aug 16"]],
+      u3: [["Deposit", 60, "Aug 10"], ["Opened · Charm Box", -6, "Aug 16"], ["Buyback · Sonny Angel", 8.40, "Aug 16"], ["Opened · Charm Box", -6, "Aug 16"], ["Buyback · Labubu", 15.40, "Aug 16"], ["Opened · Ritual Box", -8, "Aug 16"], ["Buyback · Palo Santo", 6.30, "Aug 16"]],
+      u4: [["Deposit", 50, "Jul 30"], ["Opened · Date Night Box", -35, "Aug 02"], ["Shipped · Black Opium", 0, "Aug 03"]],
+      u5: [["Deposit", 120, "Aug 15"], ["Opened · Phone Case Box", -15, "Aug 15"], ["Buyback · Burga case", 19.60, "Aug 15"], ["Withdrawal request", -62, "Aug 16"]],
+      u6: [["Free daily box", 0, "Aug 15"], ["Buyback · scent stick", 4.60, "Aug 15"], ["Free daily box", 0, "Aug 16"]],
+    };
+    const uOpen = new Set();
+    const uShelf = new Set();
+    /* demo shelves: what each user is holding right now */
+    const USER_SHELF = {
+      u1: [["cartierlove", "vault", "The Heiress Box", "Aug 14", "0.8%", "CVT-M4QH2A"], ["br540_70", "shipping", "The Old Money Box", "Aug 15", "2.2%", "CVT-M5AK7F"], ["classicflap", "sold", "The Arm Candy Box", "Aug 14", "0.1%", "CVT-M4QG9C"]],
+      u2: [["delina75", "vault", "The Coquette Box", "Aug 12", "4.5%", "CVT-M2XR4B"], ["cocomad", "shipping", "The Rich Mom Box", "Aug 16", "8.3%", "CVT-M6BT8D"]],
+      u3: [["labubu", "sold", "The Daily Luck Box", "Aug 16", "2.9%", "CVT-M6CU1E"], ["palosanto", "sold", "The Daily Luck Box", "Aug 15", "30%", "CVT-M5DV3G"], ["incense", "vault", "The Daily Luck Box", "Aug 16", "58%", "CVT-M6EW5H"]],
+      u4: [["blackop30", "shipping", "The Date Night Box", "Aug 02", "91.7%", "CVT-LQFX7J"]],
+      u5: [["libre10", "sold", "The Daily Fragrance Box", "Aug 15", "9%", "CVT-M5GY9K"]],
+      u6: [["scentstick", "vault", "The Daily Fragrance Box", "Aug 16", "30%", "CVT-M6HZ2L"]],
+    };
+    /* every roll gets a public id. In production the id keys the full round
+       record (server seed, client seed, nonce, odds band, timestamps); here
+       the lookup reconstructs what the demo knows. */
+    function txnLookup() {
+      const host = document.getElementById("txnResult");
+      const q = (document.getElementById("txnSearch").value || "").trim().toUpperCase();
+      if (q.length < 4) { host.innerHTML = ""; return; }
+      const hits = [];
+      for (const [uid, rows] of Object.entries(USER_SHELF)) {
+        rows.forEach(([did, st, box, when, odds, txn]) => {
+          if (txn && txn.includes(q)) hits.push({ txn, uid, who: (USERS.find((x) => x.uid === uid) || {}).name, did, st, box, when, odds });
+        });
+      }
+      try {
+        for (const it of JSON.parse(localStorage.getItem("covet_inventory")) || []) {
+          if (it.txn && it.txn.toUpperCase().includes(q))
+            hits.push({ txn: it.txn, uid: null, who: "You (this browser's customer session)", did: it.dropId, st: it.status, box: it.boxName, when: it.ts, odds: it.odds != null ? it.odds + "%" : "—", seed: it.seed });
+        }
+      } catch {}
+      host.innerHTML = hits.slice(0, 5).map((h) => {
+        const d = allDrops().find((x) => x.id === h.did) || bxCatalog.get(h.did);
+        const nonce = [...h.txn].reduce((s, c) => s + c.charCodeAt(0), 0) % 900 + 100;
+        return `<div class="ord" style="align-items:center;border-color:var(--gold)">
+          <span class="ord-art" style="width:36px">${d ? productArt(d, 30) : "?"}</span>
+          <div class="ord-who" style="flex:1"><b>#${h.txn} · ${d ? d.house + " " + d.name : h.did}</b>
+            <span>${h.who}${h.uid ? "" : ""} · pulled from ${h.box} · ${h.when} · at ${h.odds} odds · now ${h.st}</span>
+            <span class="micro" style="display:block;margin-top:4px">Round: client seed ${h.seed ? h.seed.slice(0, 10) + "…" : "her-seed…"} · nonce ${nonce} · roll landed inside the ${h.odds} band · server seed publishes at rotation, verifiable on the odds page</span>
+          </div>
+          ${h.uid ? `<div class="ord-actions"><button class="btn btn-ghost" onclick="jumpToUser('${h.who}')">Open her profile</button></div>` : ""}
+        </div>`;
+      }).join("") || `<div class="ord" style="opacity:0.6;margin-bottom:12px"><div class="ord-cost">No transaction matches #${q}. Ids look like CVT-M4QH2A; every reveal popup, shelf item, and email carries one.</div></div>`;
+    }
+    /* ---------- maintenance mode ---------- */
+    function mtState() { try { return JSON.parse(localStorage.getItem("covet_maintenance")) || null; } catch { return null; } }
+    function mtRender() {
+      const m = mtState(); const b = document.getElementById("mtBtn");
+      if (!b) return;
+      b.textContent = m ? "Bring the site back" : "Pause the site";
+      b.style.background = m ? "#c22a4c" : "";
+      if (m && m.msg) document.getElementById("mtMsg").value = m.msg;
+    }
+    function mtToggle() {
+      if (mtState()) localStorage.removeItem("covet_maintenance");
+      else localStorage.setItem("covet_maintenance", JSON.stringify({ on: true, msg: document.getElementById("mtMsg").value.trim() }));
+      mtRender();
+    }
+    function shelfAct(uid, idx, act) {
+      const item = (USER_SHELF[uid] || [])[idx];
+      if (!item) return;
+      if (act === "ship") item[1] = "shipping";
+      if (act === "buyback") {
+        const d = allDrops().find((x) => x.id === item[0]) || bxCatalog.get(item[0]);
+        item[1] = "sold";
+        const u = USERS.find((x) => x.uid === uid);
+        u.balance += buybackFor({ free: false }, d);
+      }
+      if (act === "remove") {
+        if (!confirm("Remove this item from her shelf? Use for corrections only; this is the ops override, and in production it writes to the audit log.")) return;
+        USER_SHELF[uid].splice(idx, 1);
+      }
+      renderUsers();
+    }
+    function uToggleShelf(uid) {
+      uShelf.has(uid) ? uShelf.delete(uid) : uShelf.add(uid);
+      renderUsers();
+    }
+    /* flags are notes to YOURSELF (and any future teammate): the reason
+       shows on the row, persists, and flagged users' transfers hold for
+       manual review instead of auto-paying. */
+    function getFlags() {
+      try { return JSON.parse(localStorage.getItem("covet_admin_flags")) || {}; } catch { return {}; }
+    }
+    function uFlag(uid) {
+      const flags = getFlags();
+      const u = USERS.find((x) => x.uid === uid);
+      if (flags[uid]) {
+        if (!confirm(`Remove the flag on ${u.name}? ("${flags[uid]}")`)) return;
+        delete flags[uid];
+        u.flag = null;
+        localStorage.setItem("covet_admin_flags", JSON.stringify(flags));
+        renderUsers();
+        return;
+      }
+      openModal(`
+        <span class="eyebrow">Flag ${u.name}</span>
+        <h2>Leave yourself the reason</h2>
+        <p class="modal-sub">The note shows on this profile, and this account's transfers hold for your manual review instead of auto-paying until you unflag.</p>
+        <div class="field" style="text-align:left"><label>Reason</label><input id="flagReason" maxlength="60" placeholder="heavy cycler, verify next transfer" /></div>
+        <div class="modal-actions">
+          <button class="btn btn-gold" onclick="uFlagSave('${uid}')">Flag account</button>
+          <button class="btn btn-quiet" onclick="closeModal()">Cancel</button>
+        </div>
+      `);
+      setTimeout(() => document.getElementById("flagReason").focus(), 50);
+    }
+    function uFlagSave(uid) {
+      const reason = (document.getElementById("flagReason").value || "").trim() || "review before next transfer";
+      const flags = getFlags();
+      flags[uid] = reason;
+      localStorage.setItem("covet_admin_flags", JSON.stringify(flags));
+      USERS.find((x) => x.uid === uid).flag = reason;
+      closeModal();
+      renderUsers();
+    }
+    function uAct(uid, act) {
+      const row = document.getElementById(uid);
+      const msg = {
+        ban: `<span class="ord-status" style="color:var(--muted)">Suspended · sign-in blocked, balance frozen</span>`,
+        permban: `<span class="ord-status" style="color:#c22a4c">BANNED · KYC identity blocked forever, chargeback evidence packet filed</span>`,
+      }[act];
+      if (act === "permban" && !confirm("Permanently ban this identity? Their KYC identity can never open another account.")) return;
+      row.querySelector(".ord-actions").innerHTML = msg;
+      row.classList.add("done");
+    }
+    /* creator payout lane: skips the consumer gates ($20 floor, first-purchase,
+       consumer KYC). Payouts go out as manually approved business payments
+       instead (PayPal/ACH), with a W-9 on file over $600/yr. */
+    function uCreator(uid) {
+      const u = USERS.find(x => x.uid === uid);
+      u.creator = !u.creator;
+      renderUsers();
+    }
+    /* refundable = deposits minus spend on opens, capped by balance.
+       Buyback credit is never refundable; it transfers instead. */
+    function uRefundable(uid) {
+      const tx = USER_TX[uid] || [];
+      const dep = tx.filter(([w]) => w.startsWith("Deposit")).reduce((a, [, v]) => a + v, 0);
+      const spent = tx.filter(([w]) => w.startsWith("Opened")).reduce((a, [, v]) => a - v, 0);
+      const refunded = tx.filter(([w]) => w.startsWith("Refund")).reduce((a, [, v]) => a - v, 0);
+      const u = USERS.find(x => x.uid === uid);
+      return Math.max(0, Math.min(dep - spent - refunded, u.balance));
+    }
+    function uRefund(uid) {
+      const u = USERS.find(x => x.uid === uid);
+      const tx = USER_TX[uid] || [];
+      const dep = tx.filter(([w]) => w.startsWith("Deposit")).reduce((a, [, v]) => a + v, 0);
+      const spent = tx.filter(([w]) => w.startsWith("Opened")).reduce((a, [, v]) => a - v, 0);
+      const r = uRefundable(uid);
+      document.getElementById(uid + "-edit").innerHTML = `
+        <div class="tx-panel" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <span class="micro" style="flex:1;min-width:220px">Deposited <b>${money(dep)}</b> · spent on opens <b>${money(spent)}</b> · balance <b>${money(u.balance)}</b><br>
+          <b style="color:var(--ink)">Refundable to original card: ${money(r)}</b> · the rest is buyback credit (transfer only)</span>
+          <input id="rf-${uid}" type="number" min="0.01" max="${r}" step="0.01" value="${r.toFixed(2)}" style="width:110px;padding:9px 12px;border:1px solid var(--line-soft);border-radius:10px" ${r <= 0 ? "disabled" : ""} />
+          <button class="btn btn-gold" ${r <= 0 ? "disabled" : ""} onclick="uRefundGo('${uid}')">Refund to card</button>
+          <button class="btn btn-quiet" onclick="document.getElementById('${uid}-edit').innerHTML=''">Cancel</button>
+        </div>`;
+    }
+    function uRefundGo(uid) {
+      const amt = Math.min(parseFloat(document.getElementById("rf-" + uid).value || 0), uRefundable(uid));
+      if (amt <= 0) return;
+      const u = USERS.find(x => x.uid === uid);
+      u.balance = Math.round((u.balance - amt) * 100) / 100;
+      (USER_TX[uid] = USER_TX[uid] || []).push(["Refund to original card", -amt, "just now"]);
+      document.getElementById(uid + "-edit").innerHTML = "";
+      uOpen.add(uid);
+      renderUsers();
+    }
+    function uToggleTx(uid) {
+      uOpen.has(uid) ? uOpen.delete(uid) : uOpen.add(uid);
+      renderUsers();
+    }
+    function uEditBal(uid) {
+      const u = USERS.find(x => x.uid === uid);
+      const host = document.getElementById(uid + "-edit");
+      host.innerHTML = `
+        <div style="display:flex;gap:8px;align-items:center;padding:12px 20px;background:var(--bg2);border-radius:14px;margin:0 0 10px">
+          <span class="micro" style="font-weight:700">New balance $</span>
+          <input id="${uid}-bal" type="number" step="0.01" value="${u.balance.toFixed(2)}" style="width:110px;padding:8px 14px;border-radius:100px;border:1px solid var(--line);font-family:inherit;font-size:13px;outline:none" />
+          <input id="${uid}-why" placeholder="Reason (goes to the ledger)" style="flex:1;min-width:160px;padding:8px 14px;border-radius:100px;border:1px solid var(--line);font-family:inherit;font-size:12px;outline:none" />
+          <button class="btn btn-gold" style="padding:9px 18px;font-size:10px" onclick="uSaveBal('${uid}')">Save</button>
+        </div>`;
+    }
+    function uSaveBal(uid) {
+      const u = USERS.find(x => x.uid === uid);
+      const nb = parseFloat(document.getElementById(uid + "-bal").value);
+      if (isNaN(nb)) return;
+      const why = document.getElementById(uid + "-why").value.trim() || "manual adjustment";
+      const diff = Math.round((nb - u.balance) * 100) / 100;
+      u.balance = nb;
+      (USER_TX[uid] = USER_TX[uid] || []).push(["Adjustment · " + why, diff, "just now"]);
+      uOpen.add(uid);
+      renderUsers();
+    }
+    function renderUsers() {
+      const persisted = getFlags();
+      USERS.forEach((u) => { if (persisted[u.uid]) u.flag = persisted[u.uid]; });
+      const q = (document.getElementById("userSearch").value || "").trim().toLowerCase();
+      document.getElementById("userList").innerHTML = USERS
+        .filter(u => !q || u.name.toLowerCase().includes(q))
+        .map(u => `
+        <div class="ord" id="${u.uid}" style="margin-bottom:${uOpen.has(u.uid) ? 0 : 12}px">
+          <span class="avat">${u.name[0].toUpperCase()}</span>
+          <div class="ord-who"><b>${u.name}</b><span>${u.where}</span></div>
+          <div class="u-stats">Opened <b>${money(u.opens)}</b> lifetime · buyback rate <b>${u.buyback}%</b><br>Balance <b>${money(u.balance)}</b> · ${u.entries} giveaway entries</div>
+          <span class="kyc-chip ${u.kyc ? "" : "warn"}">${u.kyc ? "KYC verified" : "no KYC"}</span>
+          ${u.creator ? `<span class="kyc-chip" style="background:var(--gold-dim);color:var(--gold)">♥ creator · payout lane</span>` : ""}
+          ${u.flag ? `<span class="flag-chip">⚑ ${u.flag}</span>` : ""}
+          <div class="ord-actions">
+            <button class="btn btn-gold" onclick="uToggleTx('${u.uid}')">${uOpen.has(u.uid) ? "Hide history" : "History"}</button>
+            <button class="btn btn-ghost" onclick="uToggleShelf('${u.uid}')">${uShelf.has(u.uid) ? "Hide shelf" : "Shelf"}</button>
+            <button class="btn btn-ghost" onclick="uEditBal('${u.uid}')">Edit balance</button>
+            <button class="btn btn-ghost" onclick="uRefund('${u.uid}')">Refund</button>
+            <button class="btn btn-ghost" onclick="uCreator('${u.uid}')">${u.creator ? "Remove creator" : "Creator lane"}</button>
+            <button class="btn btn-ghost" onclick="uFlag('${u.uid}')">${u.flag ? "Unflag" : "Flag"}</button>
+            <button class="btn btn-quiet" onclick="uAct('${u.uid}','ban')">Suspend</button>
+            <button class="btn btn-quiet" style="color:#c22a4c" onclick="uAct('${u.uid}','permban')">Ban</button>
+          </div>
+        </div>
+        <div id="${u.uid}-edit"></div>
+        ${uOpen.has(u.uid) ? `
+        <div class="tx-panel">
+          ${(USER_TX[u.uid] || []).slice().reverse().map(([what, amt, when]) => `
+            <div class="tx-row"><span>${what}</span><span class="micro">${when}</span>
+              <b style="color:${amt > 0 ? "#2c8a4b" : amt < 0 ? "var(--gold)" : "var(--muted)"}">${amt === 0 ? "—" : (amt > 0 ? "+" : "") + money(amt)}</b>
+            </div>`).join("")}
+        </div>` : ""}
+        ${uShelf.has(u.uid) ? `
+        <div class="tx-panel">
+          ${(USER_SHELF[u.uid] || []).map(([did, st, box, when, odds, txn], si) => {
+            const d = allDrops().find((x) => x.id === did) || bxCatalog.get(did);
+            if (!d) return "";
+            const meta = { vault: ["on her shelf", "#2c8a4b"], shipping: ["shipping", "#b07c1e"], sold: ["sold back", "var(--muted)"] }[st] || ["on her shelf", "#2c8a4b"];
+            const offer = buybackFor({ free: false }, d);
+            return `<div class="tx-row" style="gap:12px">
+              <span style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">${productArt(d, 26)}
+                <span><b>${d.house} ${d.name}</b><br><span class="micro">${txn ? "#" + txn + " · " : ""}pulled from ${box} · ${when} · at ${odds} odds · shown ${money(d.value)} · buyback now ${money(offer)}</span></span>
+              </span>
+              <b style="color:${meta[1]};white-space:nowrap">${meta[0]}</b>
+              <span style="display:flex;gap:6px;flex-shrink:0">
+                ${st === "vault" ? `<button class="btn btn-quiet" style="padding:7px 12px;font-size:10px" onclick="shelfAct('${u.uid}', ${si}, 'ship')">Mark shipped</button>
+                <button class="btn btn-quiet" style="padding:7px 12px;font-size:10px" onclick="shelfAct('${u.uid}', ${si}, 'buyback')">Buy back ${money(offer)}</button>` : ""}
+                <button class="btn btn-quiet" style="padding:7px 12px;font-size:10px;color:#c22a4c" onclick="shelfAct('${u.uid}', ${si}, 'remove')">✕</button>
+              </span>
+            </div>`;
+          }).join("") || `<div class="tx-row"><span class="micro">Shelf is empty.</span></div>`}
+        </div>` : ""}`).join("");
+    }
+
+    /* ---------- support: tickets + live chat ---------- */
+    const TICKETS = [
+      { tid: "t1", who: "Priya S.", subject: "Where is my Classic Flap?", age: "12m", status: "open", msgs: [
+        ["them", "hii! I shipped my classic flap pull 3 days ago and the tracking hasn't moved 😭", "12m ago"],
+        ["them", "order #4821 if that helps", "11m ago"],
+      ]},
+      { tid: "t2", who: "user_4492", subject: "Withdrawal stuck on review", age: "1h", status: "waiting", msgs: [
+        ["them", "my $62 withdrawal says under review, how long does this take?", "1h ago"],
+        ["me", "Hi love! First withdrawals need a quick ID check — I've just sent the secure link to your email, takes 2 minutes ♥", "50m ago"],
+      ]},
+      { tid: "t3", who: "Nia B.", subject: "Wrong shade shipped", age: "3h", status: "open", msgs: [
+        ["them", "the lip butter duo came in the wrong shades, I pulled vanilla + brown sugar", "3h ago"],
+      ]},
+      { tid: "t4", who: "Carmen D.", subject: "Love you guys", age: "1d", status: "resolved", msgs: [
+        ["them", "just wanted to say the giveaway bag arrived and it's PERFECT, posting my unboxing tn", "1d ago"],
+        ["me", "You just made our whole week 🥹 tag us so we can repost you!", "1d ago"],
+      ]},
+    ];
+    /* click a customer's name anywhere in support → their Users profile */
+    function jumpToUser(name) {
+      const u = USERS.find((x) => x.name.toLowerCase() === name.toLowerCase());
+      document.querySelectorAll("#opsTabs .ops-tab").forEach((t) => {
+        if (t.dataset.pane === "users") t.click();
+      });
+      document.getElementById("userSearch").value = name;
+      if (u) uOpen.add(u.uid);
+      renderUsers();
+      const row = u && document.getElementById(u.uid);
+      if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    let selTicket = "t1";
+    function renderTickets() {
+      document.getElementById("ticketList").innerHTML = TICKETS.map(t => `
+        <div class="ticket ${t.tid === selTicket ? "sel" : ""}" onclick="openTicket('${t.tid}')">
+          <span class="t-status ${t.status}">${t.status}</span>
+          <b>${t.subject}</b>
+          <span><a href="#" style="color:var(--gold);text-decoration:none;font-weight:700" onclick="event.stopPropagation();jumpToUser('${t.who}');return false">${t.who}</a> · ${t.age} ago</span>
+        </div>`).join("");
+      const t = TICKETS.find(x => x.tid === selTicket);
+      document.getElementById("chatPane").innerHTML = `
+        <div class="chat-head"><span class="avat">${t.who[0].toUpperCase()}</span>
+          <div style="flex:1"><a href="#" style="font-family:var(--serif);font-weight:470;color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px" onclick="jumpToUser('${t.who}');return false">${t.who}</a><br><span class="micro">${t.subject} · <span style="color:var(--gold)">view profile ↗</span></span></div>
+          <button class="btn btn-ghost" style="padding:10px 18px;font-size:10px" onclick="resolveTicket()">Mark resolved</button>
+        </div>
+        <div class="chat-msgs" id="chatMsgs">${t.msgs.map(([w, txt, when]) => `<div class="msg ${w}">${txt}<small>${when}</small></div>`).join("")}</div>
+        <div class="chat-input">
+          <input id="chatReply" placeholder="Reply as Covet…" onkeydown="if(event.key==='Enter')sendReply()" />
+          <button class="btn btn-gold" style="padding:12px 22px;font-size:10.5px" onclick="sendReply()">Send</button>
+        </div>`;
+      const m = document.getElementById("chatMsgs");
+      m.scrollTop = m.scrollHeight;
+    }
+    function openTicket(tid) { selTicket = tid; renderTickets(); }
+    function sendReply() {
+      const inp = document.getElementById("chatReply");
+      const txt = inp.value.trim();
+      if (!txt) return;
+      const t = TICKETS.find(x => x.tid === selTicket);
+      t.msgs.push(["me", txt, "just now"]);
+      if (t.status === "open") t.status = "waiting";
+      renderTickets();
+    }
+    function resolveTicket() {
+      TICKETS.find(x => x.tid === selTicket).status = "resolved";
+      renderTickets();
+    }
+
+    /* ---------- creators ---------- */
+    const CREATORS = [
+      { uid: "c1", code: "MIA5",    who: "Mia K. · TikTok 48k",     refs: 214, opens: 4820, tier: "It Girl",    pending: 96.40 },
+      { uid: "c2", code: "SOFIE",    who: "Sofia M. · IG 22k",       refs: 88,  opens: 1730, tier: "It Girl",    pending: 34.60 },
+      { uid: "c3", code: "JADEGETS", who: "Jade W. · TikTok 130k",   refs: 402, opens: 9480, tier: "Icon",       pending: 379.20 },
+      { uid: "c4", code: "NIAB",     who: "Nia B. · TikTok 6k",      refs: 12,  opens: 240,  tier: "Covet Girl", pending: 2.40 },
+    ];
+    function crAct(uid, act) {
+      const row = document.getElementById(uid);
+      row.querySelector(".ord-actions").innerHTML = act === "pay"
+        ? `<span class="ord-status">Claim approved · credited to her balance</span>`
+        : `<span class="ord-status" style="color:var(--muted)">Suspended · code disabled</span>`;
+      row.classList.add("done");
+    }
+    function renderCreators() {
+      document.getElementById("crList").innerHTML = CREATORS.map(c => `
+        <div class="ord" id="${c.uid}">
+          <div class="ord-who"><b>${c.code}</b><span>${c.who}</span></div>
+          <div class="ord-cost"><b>${c.refs}</b> referrals · <b>${money(c.opens)}</b> opened by them</div>
+          <span class="tier-chip">${c.tier}</span>
+          <div class="ord-cost" style="flex:0 0 auto">Pending <b>${money(c.pending)}</b></div>
+          <div class="ord-actions">
+            <button class="btn btn-gold" onclick="crAct('${c.uid}','pay')">Approve claim</button>
+            <button class="btn btn-quiet" onclick="crAct('${c.uid}','ban')">Suspend</button>
+          </div>
+        </div>`).join("");
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("queue").innerHTML = ORDERS.map(o => {
+        const d = allDrops().find(x => x.id === o.dropId);
+        const cheaper = o.stock != null && o.stock < o.api;
+        return `<div class="ord" id="${o.uid}">
+          <span class="sla ${o.age}" title="${o.note}"></span>
+          <span class="ord-art">${productArt(d, 34)}</span>
+          <div class="ord-who"><b>${d.house} ${d.name}</b><span>${o.who} · ${o.box} · ${o.note}</span></div>
+          <div class="ord-cost">
+            API: <b>${money(o.api)}</b> ${cheaper ? "" : o.stock == null ? '<span class="best-price">← cheapest</span>' : ""}<br>
+            My stock: ${o.stock != null ? `<b>${money(o.stock)}</b> ${cheaper ? '<span class="best-price">← cheapest, save ' + money(o.api - o.stock) + "</span>" : ""}` : "—"}
+          </div>
+          <div class="ord-actions">
+            <button class="btn btn-gold" onclick="fulfill('${o.uid}','api')">Fulfill via API</button>
+            <button class="btn btn-ghost" onclick="fulfill('${o.uid}','manual')">Manual</button>
+            <button class="btn btn-ghost" onclick="soldOut('${o.uid}')">Sold out</button>
+            <button class="btn btn-ghost" onclick="fulfill('${o.uid}','credit')">Credit</button>
+            <button class="btn btn-quiet" onclick="fulfill('${o.uid}','hold')">Hold</button>
+          </div>
+        </div>`;
+      }).join("");
+      renderStats();
+      renderBuybacks();
+      renderWithdrawals();
+      renderGiveaway();
+      bxListRender();
+      dailyListRender();
+      shopListRender();
+      hcRender();
+      icRenderRemoved();
+      renderCreators();
+      renderUsers();
+      renderTickets();
+      const OPS_HEADS = {
+        ship: ["Fulfillment <em>queue.</em>", 'Every "Ship it" lands here. Route each order to the API or fulfill it yourself when you can source it cheaper. Rows age green → amber → red against the shipping promise; untouched rows auto-route to the API at 24h.'],
+        buyback: ["Buybacks, <em>live.</em>", "Every accepted buyback is an order you never had to fulfill. Watch for heavy cyclers: many buybacks plus a transfer request is the pattern worth a second look."],
+        withdraw: ["Transfers · <em>KYC.</em>", "Routine payments pay themselves. Only first-ever withdrawals, flagged accounts, and $500+ transfers wait here for your click; verified creators auto-pay at any amount."],
+        boxes: ["Boxes & <em>catalog.</em>", "Every box on the site, the item catalog, the daily program, the shop shelves, the buyback dials, and the homepage hero. This tab is the store."],
+        stats: ["The <em>numbers.</em>", "Revenue, cost, and profit by day, week, and month. Buyback credit is a liability until it respends or transfers, so it is shown as its own line, not as cost."],
+        giveaway: ["The <em>giveaway.</em>", "This week's prize, the entry ledger, and the queue of what's next. Winners drawn by random.org, verified before anything ships."],
+        creators: ["Creator <em>lane.</em>", "Codes, earnings, tiers, and payouts. First payout gets your eyes once; after that they pay automatically."],
+        users: ["<em>Users.</em>", "Every account: history, balance edits, refunds, flags, and bans. Support ticket names link straight here."],
+        support: ["<em>Support.</em>", "Tickets and live chat. A real human, usually within a few hours, and every customer name links to their profile."],
+      };
+      document.querySelectorAll("#opsTabs .ops-tab").forEach((t) => {
+        t.addEventListener("click", () => {
+          const head = OPS_HEADS[t.dataset.pane];
+          if (head) {
+            document.getElementById("opsTitle").innerHTML = head[0];
+            document.getElementById("opsLede").textContent = head[1];
+          }
+          document.querySelectorAll("#opsTabs .ops-tab").forEach((x) => x.classList.toggle("on", x === t));
+          document.querySelectorAll(".tab-pane").forEach((p) => p.classList.toggle("on", p.id === "pane-" + t.dataset.pane));
+        });
+      });
+    });
+  </script>
+</body>
+</html>

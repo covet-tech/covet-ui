@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unbox · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+</head>
+<body data-page="cases">
+  <header class="site-head"></header>
+
+  <main>
+    <section class="page-head" style="padding-bottom:32px">
+      <div class="shell">
+        <a class="back-link" href="cases.html"><span class="arr">←</span> All boxes</a>
+        <span class="eyebrow" id="caseEyebrow">Box</span>
+        <h1 class="display" id="caseTitle"></h1>
+        <p class="lede" id="caseBlurb"></p>
+      </div>
+    </section>
+
+    <section class="shell">
+      <!-- reveal stage -->
+      <div class="reveal-stage" id="stage">
+        <div class="reel-window">
+          <div class="reel" id="reel"></div>
+          <div class="needle"></div>
+        </div>
+        <div class="reveal-controls">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin:0 auto;text-align:center">
+            <button class="btn btn-gold btn-lg" id="openBtn" onclick="openCase()">Unbox · <span id="openPrice"></span></button>
+            <div class="reveal-modes" id="revealModes" style="justify-content:center"></div>
+            <p class="micro" style="margin:0">Something genuine, every time. Ship it free or sell it back on the spot. <span style="white-space:nowrap">Balance: <b data-wallet style="color:var(--ink)"></b></span><br>
+              <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-top:8px">
+                <input type="checkbox" id="anonChk" style="accent-color:var(--gold)" onchange="localStorage.setItem('covet_anon', this.checked ? '1' : '0')" />
+                Show me as Anonymous in the live feed
+              </label></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- odds table -->
+      <div class="section-head" style="margin-bottom:26px">
+        <div>
+          <span class="eyebrow">Verifiable odds</span>
+          <h2>Everything this box can hold</h2>
+        </div>
+        <a class="section-link" href="fairness.html">Verify any pull</a>
+      </div>
+      <div class="odds-table" id="oddsTable"></div>
+      <p class="micro" style="margin-top:16px" id="oddsFootnote"></p>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script src="js/reveal.js?v=269"></script>
+</body>
+</html>

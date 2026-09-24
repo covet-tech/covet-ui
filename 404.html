@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lost, love? · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+  <style>
+    .lost { min-height: 62vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 70px 24px; }
+    .lost-box { font-size: 76px; animation: lostFloat 3.2s ease-in-out infinite; }
+    @keyframes lostFloat { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
+  </style>
+</head>
+<body data-page="lost">
+  <header class="site-head"></header>
+  <main>
+    <section class="shell lost">
+      <div class="lost-box">🎁</div>
+      <span class="eyebrow" style="margin-top:16px">404 · not every box has something in it</span>
+      <h1 class="display" style="margin-top:8px">This one came up empty.</h1>
+      <p class="lede" style="margin:14px auto 0;max-width:46ch">The page you're looking for was never in the box. The good stuff is all still exactly where it should be.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px">
+        <a class="btn btn-gold" href="index.html">Take me home</a>
+        <a class="btn btn-ghost" href="cases.html">Browse the boxes</a>
+      </div>
+    </section>
+  </main>
+  <footer class="site-foot"></footer>
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+</body>
+</html>

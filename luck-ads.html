@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Covet luck ads renderer</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; }
+    #stage { position: relative; width: 1080px; height: 1920px; font-family: "Inter", sans-serif;
+      background: linear-gradient(170deg, #fdf3ec 0%, #fbe9e2 45%, #f6d9d2 100%); }
+    .endbg { position: absolute; inset: 0; background: linear-gradient(160deg, #d92747, #ff5f85 65%, #e02d56); opacity: 0; }
+    .card { position: absolute; inset: 0; opacity: 0; }
+    .ctext { position: absolute; left: 60px; right: 60px; top: 640px;
+      font-family: "Fraunces", serif; font-weight: 480; font-size: 128px; line-height: 1.12;
+      color: #9d1b2d; text-align: center; letter-spacing: -0.005em; }
+    .ctext em { font-style: italic; font-weight: 340; color: #e0455e; }
+    /* gift box with bow */
+    .gbox { position: absolute; left: 50%; transform: translateX(-50%); }
+    .g-body { position: relative; width: 230px; height: 145px; border-radius: 24px;
+      background: linear-gradient(135deg, #c81f42, #e8496b 70%, #c81f42);
+      box-shadow: 0 26px 54px rgba(140, 20, 45, 0.3), inset 0 8px 18px rgba(255,255,255,0.3); }
+    .g-body i { position: absolute; left: 50%; top: 0; bottom: 0; transform: translateX(-50%); width: 34px; border-radius: 6px;
+      background: linear-gradient(180deg, #fdf0e8, #f8dbe2); }
+    .g-cap { position: absolute; left: 50%; margin-left: -130px; width: 260px; height: 44px; border-radius: 16px; z-index: 2;
+      background: linear-gradient(135deg, #c81f42, #e8496b 65%, #c81f42);
+      box-shadow: 0 16px 34px rgba(140, 20, 45, 0.28), inset 0 6px 12px rgba(255,255,255,0.3); }
+    .g-cap i { position: absolute; left: 50%; top: 0; bottom: 0; transform: translateX(-50%); width: 38px; border-radius: 6px;
+      background: linear-gradient(180deg, #fdf0e8, #f8dbe2); }
+    .g-cap::before, .g-cap::after { content: ""; position: absolute; top: -33px; width: 68px; height: 44px;
+      background: linear-gradient(135deg, #fdf0e8 20%, #f8d0da 70%, #f2b8c8);
+      border-radius: 62% 38% 66% 34% / 72% 64% 36% 28%;
+      box-shadow: inset 0 -9px 17px rgba(200, 31, 66, 0.3); }
+    .g-cap::before { right: calc(50% - 5px); transform: rotate(-34deg); }
+    .g-cap::after { left: calc(50% - 5px); transform: rotate(34deg) scaleX(-1); }
+    .g-knot { position: absolute; left: 50%; top: -20px; transform: translateX(-50%); width: 31px; height: 28px; z-index: 3;
+      background: linear-gradient(135deg, #fdf0e8, #f8d0da); border-radius: 10px;
+      box-shadow: inset 0 -5px 9px rgba(200, 31, 66, 0.28); }
+    /* stickers */
+    .sticker { position: absolute; background: #fff; border-radius: 26px; padding: 20px;
+      box-shadow: 0 14px 34px rgba(120, 30, 40, 0.18); opacity: 0; }
+    .check { position: absolute; right: -12px; top: -12px; width: 42px; height: 42px; border-radius: 50%;
+      background: #eeb020; color: #fff; font-size: 24px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 14px rgba(160, 110, 10, 0.35); }
+    .heartchip { position: absolute; right: -12px; top: -12px; width: 42px; height: 42px; border-radius: 50%;
+      background: #e0455e; color: #fff; font-size: 22px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 14px rgba(160, 20, 45, 0.35); }
+    .bigsticker { position: absolute; left: 50%; margin-left: -170px; background: #fff; border-radius: 34px; padding: 34px 40px 26px;
+      box-shadow: 0 22px 50px rgba(120, 30, 40, 0.2); text-align: center; opacity: 0; width: 340px; }
+    .bigsticker .bn { font-family: "Fraunces", serif; font-size: 30px; font-weight: 470; color: #29192b; margin-top: 12px; line-height: 1.15; }
+    .fl { position: absolute; opacity: 0; }
+    .coin { position: absolute; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #f5d76e, #d9a83c);
+      box-shadow: 0 5px 12px rgba(160,110,10,0.3); opacity: 0; }
+    /* end card */
+    .enddom { position: absolute; left: 0; right: 0; top: 800px; font-family: "Fraunces", serif;
+      font-size: 168px; font-weight: 480; color: #fff; text-align: center; letter-spacing: 0.02em; opacity: 0; }
+    .endsub { position: absolute; left: 0; right: 0; top: 1030px; font-size: 42px; font-weight: 600;
+      color: rgba(255,255,255,0.94); text-align: center; opacity: 0; }
+    .endbow { position: absolute; left: 50%; top: 500px; transform: translateX(-50%) scale(0.8); opacity: 0; }
+    .wm { position: absolute; left: 0; right: 0; bottom: 54px; text-align: center; z-index: 90;
+      font-family: "Fraunces", serif; font-weight: 500; font-size: 40px; letter-spacing: 0.06em; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <script>
+  const FPS = 24, DUR = 10;
+  window.TOTAL_FRAMES = DUR * FPS;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const P = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+  const backOut = (x) => { const c = 2.70158; return 1 + c * Math.pow(x - 1, 3) + (c - 1) * Math.pow(x - 1, 2); };
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  const ICONS = {
+    perfume: `<svg width="110" height="140" viewBox="0 0 80 96" fill="none"><rect x="30" y="4" width="20" height="12" rx="3" fill="#9d1b2d"/><rect x="18" y="20" width="44" height="70" rx="8" fill="#f2b8c6"/><rect x="24" y="28" width="8" height="54" rx="4" fill="#fff" opacity="0.5"/></svg>`,
+    bag: `<svg width="140" height="110" viewBox="0 0 100 78" fill="none"><path d="M32 26 Q32 8 50 8 Q68 8 68 26" stroke="#9d1b2d" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="12" y="26" width="76" height="46" rx="12" fill="#2b2b2b"/><path d="M22 36 L36 50 M36 36 L22 50 M44 36 L58 50 M58 36 L44 50 M66 36 L80 50 M80 36 L66 50" stroke="#4a4a4a" stroke-width="2"/><circle cx="50" cy="52" r="7" fill="none" stroke="#d4af6a" stroke-width="3.4"/></svg>`,
+    bagpink: `<svg width="140" height="110" viewBox="0 0 100 78" fill="none"><path d="M32 26 Q32 8 50 8 Q68 8 68 26" stroke="#9d1b2d" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="12" y="26" width="76" height="46" rx="12" fill="#f6c9d4"/><circle cx="50" cy="52" r="7" fill="none" stroke="#d4af6a" stroke-width="3.4"/></svg>`,
+    sunnies: `<svg width="130" height="80" viewBox="0 0 80 36" fill="none"><path d="M2 10 C10 4 27 5 33 11 C35 13 35 17 34 20 C32 27 25 31 17 31 C9 31 3 26 2 17 Z" fill="#c22a45"/><path d="M78 10 C70 4 53 5 47 11 C45 13 45 17 46 20 C48 27 55 31 63 31 C71 31 77 26 78 17 Z" fill="#c22a45"/><path d="M35 13 Q40 9 45 13" stroke="#c22a45" stroke-width="2.6" fill="none"/></svg>`,
+  };
+  const boxHTML = (id) => `<div class="gbox" id="${id}"><div class="g-cap" id="${id}cap" style="top:-24px"><i></i><span class="g-knot"></span></div><div class="g-body" style="margin-top:26px"><i></i></div></div>`;
+
+  const ADS = {
+    A: {
+      cards: [
+        { html: `<div class="ctext" id="t0" style="top:600px">it's your<br><em>lucky girl era ♥</em></div>${boxHTML("bx0")}
+                 <span class="fl" id="f0a" style="left:340px;top:1140px;font-size:56px;color:#e8496b">♥</span>
+                 <span class="fl" id="f0b" style="left:640px;top:1100px;font-size:44px;color:#f2a0b4">♥</span>
+                 <span class="fl" id="f0c" style="left:250px;top:560px;font-size:48px;color:#e8a94e">✨</span>`,
+          boxAt: "bx0", boxTop: 1240 },
+        { html: `<div class="ctext" id="t1" style="top:560px;font-size:118px">win real designer,<br><em>never a dupe</em></div>
+                 <div class="sticker" id="s1a" style="left:170px;top:1150px;transform:rotate(-7deg)">${ICONS.perfume}<span class="check">✓</span></div>
+                 <div class="sticker" id="s1b" style="left:440px;top:1210px;transform:rotate(3deg)">${ICONS.bagpink}<span class="check">✓</span></div>
+                 <div class="sticker" id="s1c" style="left:730px;top:1160px;transform:rotate(8deg)">${ICONS.sunnies}<span class="check">✓</span></div>` },
+        { html: `<div class="ctext" id="t2" style="top:600px">a free box,<br><em>every single day</em></div>${boxHTML("bx2")}
+                 <span class="fl" id="f2a" style="left:380px;top:1180px;font-size:50px;color:#e8496b">♥</span>
+                 <span class="fl" id="f2b" style="left:620px;top:1140px;font-size:42px;color:#e8a94e">✨</span>`,
+          boxAt: "bx2", boxTop: 1260 },
+      ],
+      end: { sub: "boxes from $6" },
+    },
+    B: {
+      cards: [
+        { html: `<div class="ctext" id="t0" style="top:700px">some girls<br><em>just win ✨</em></div>
+                 <span class="fl" id="f0a" style="left:300px;top:520px;font-size:64px;color:#e8a94e">✨</span>
+                 <span class="fl" id="f0b" style="left:700px;top:1230px;font-size:56px;color:#e8496b">♥</span>
+                 <span class="fl" id="f0c" style="left:220px;top:1300px;font-size:44px;color:#f2a0b4">♥</span>
+                 <span class="fl" id="f0d" style="right:240px;top:560px;font-size:48px;color:#e0455e">♥</span>` },
+        { html: `<div class="ctext" id="t1" style="top:480px;font-size:112px">this week's giveaway:<br><em>a vintage chanel</em></div>
+                 <div class="bigsticker" id="s1a" style="top:1080px;transform:rotate(-3deg)">${ICONS.bag}<div class="bn">Classic Flap<br>· the real one ·</div><span class="heartchip">♥</span></div>` },
+        { html: `<div class="ctext" id="t2" style="top:580px;font-size:116px">5 free entries daily,<br><em>no purchase ever</em></div>
+                 ${Array.from({length: 9}, (_, i) => `<span class="coin" id="c${i}" style="left:${140 + (i * 97) % 800}px;width:${26 + (i % 3) * 8}px;height:${26 + (i % 3) * 8}px"></span>`).join("")}` ,
+          coins: 9 },
+      ],
+      end: { sub: "weekly giveaways ♥" },
+    },
+    C: {
+      cards: [
+        { html: `<div class="ctext" id="t0" style="top:660px">manifest it,<br><em>then unbox it ♥</em></div>
+                 <span class="fl" id="f0a" style="left:280px;top:540px;font-size:56px;color:#e8a94e">✨</span>
+                 <span class="fl" id="f0b" style="right:260px;top:1200px;font-size:50px;color:#e8a94e">✨</span>
+                 <span class="fl" id="f0c" style="left:420px;top:1290px;font-size:46px;color:#e8496b">♥</span>` },
+        { html: `<div class="ctext" id="t1" style="top:560px;font-size:118px">your wishlist,<br><em>your chances</em></div>
+                 <div class="sticker" id="s1a" style="left:170px;top:1150px;transform:rotate(-7deg)">${ICONS.perfume}<span class="heartchip">♥</span></div>
+                 <div class="sticker" id="s1b" style="left:440px;top:1210px;transform:rotate(3deg)">${ICONS.bagpink}<span class="heartchip">♥</span></div>
+                 <div class="sticker" id="s1c" style="left:730px;top:1160px;transform:rotate(8deg)">${ICONS.sunnies}<span class="heartchip">♥</span></div>` },
+        { html: `<div class="ctext" id="t2" style="top:580px;font-size:116px">not the one?<br><em>sell it back instantly</em></div>${boxHTML("bx2")}
+                 <span class="fl" id="f2a" style="left:360px;top:1180px;font-size:48px;color:#e8496b">♥</span>`,
+          boxAt: "bx2", boxTop: 1270 },
+      ],
+      end: { sub: "your wishlist is waiting ♥" },
+    },
+  };
+
+  const AD = ADS[new URLSearchParams(location.search).get("ad") || "A"];
+  const stage = document.getElementById("stage");
+  stage.innerHTML =
+    `<div class="endbg" id="endbg"></div>` +
+    AD.cards.map((c, i) => `<div class="card" id="card${i}">${c.html}</div>`).join("") +
+    `<div class="card" id="card3">
+       <div class="endbow" id="endbow">${boxHTML("ebx")}</div>
+       <div class="enddom" id="enddom">covet.gg</div>
+       <div class="endsub" id="endsub">${AD.end.sub}</div>
+       ${Array.from({length: 6}, (_, i) => `<span class="fl" id="eh${i}" style="left:${160 + i * 140}px;top:1500px;font-size:${34 + (i % 3) * 12}px;color:#fff">♥</span>`).join("")}
+     </div>` +
+    `<div class="wm" id="wm">covet.gg</div>`;
+  AD.cards.forEach((c, i) => {
+    if (c.boxAt) document.getElementById(c.boxAt).style.top = c.boxTop + "px";
+  });
+  document.getElementById("ebx").style.top = "0px";
+
+  const $ = (id) => document.getElementById(id);
+  const W = [[0, 2.6], [2.6, 5.1], [5.1, 7.5], [7.5, 10]];
+  window.setFrame = function (f) {
+    const t = f / FPS;
+    for (let i = 0; i < 4; i++) {
+      const [a, b] = W[i];
+      $("card" + i).style.opacity = (t >= a && t < b) || (i === 3 && t >= a) ? "1" : "0";
+    }
+    $("endbg").style.opacity = P(t, 7.5, 7.9);
+    $("wm").style.color = t < 7.6 ? "rgba(41,25,43,0.8)" : "rgba(255,255,255,0.92)";
+
+    AD.cards.forEach((c, i) => {
+      const [a] = W[i];
+      const lt = t - a;
+      const el = $("t" + i);
+      if (el) {
+        const q = backOut(P(lt, 0.05, 0.55));
+        el.style.transform = `scale(${lerp(0.55, 1, q)})`;
+        el.style.opacity = P(lt, 0.05, 0.3);
+      }
+      if (c.boxAt) {
+        const g = backOut(P(lt, 0.55, 1.05));
+        $(c.boxAt).style.transform = `translateX(-50%) translateY(${lerp(120, 0, g)}px) scale(${lerp(0.4, 1, g)})`;
+        $(c.boxAt).style.opacity = P(lt, 0.55, 0.8);
+        const pop = P(lt, 1.15, 1.55);
+        $(c.boxAt + "cap").style.transform = `translateY(${lerp(0, -70, backOut(pop))}px) rotate(${lerp(0, -11, pop)}deg)`;
+      }
+      ["a", "b", "c"].forEach((suf, k) => {
+        const st = $("s" + i + suf);
+        if (st) {
+          const q = backOut(P(lt, 0.55 + k * 0.16, 1.0 + k * 0.16));
+          const rot = st.style.transform.match(/rotate\([^)]*\)/) ? st.style.transform.match(/rotate\([^)]*\)/)[0] : "";
+          st.style.transform = `${rot} scale(${lerp(0.2, 1, q)}) translateY(${lerp(50, 0, q)}px)`;
+          st.style.opacity = P(lt, 0.55 + k * 0.16, 0.75 + k * 0.16);
+        }
+      });
+      ["a", "b", "c", "d"].forEach((suf) => {
+        const fl = $("f" + i + suf);
+        if (fl) {
+          fl.style.opacity = P(lt, 0.8, 1.15);
+          fl.style.transform = `translateY(${lerp(18, -18, P(lt, 0.8, 2.5))}px)`;
+        }
+      });
+      if (c.coins) for (let k = 0; k < c.coins; k++) {
+        const cn = $("c" + k);
+        const d = (k % 5) * 0.14;
+        const p = P(lt, 0.5 + d, 2.2 + d);
+        cn.style.opacity = String(clamp(P(lt, 0.5 + d, 0.7 + d) - P(lt, 1.9 + d, 2.3 + d), 0, 1));
+        cn.style.top = lerp(1050, 1560, p) + "px";
+        cn.style.transform = `rotate(${p * 260}deg)`;
+      }
+    });
+
+    /* end card */
+    const et = t - 7.5;
+    const eb = backOut(P(et, 0.15, 0.7));
+    $("endbow").style.transform = `translateX(-50%) scale(${lerp(0.3, 0.8, eb)})`;
+    $("endbow").style.opacity = P(et, 0.15, 0.4);
+    const ed = backOut(P(et, 0.45, 1.05));
+    $("enddom").style.transform = `translateY(${lerp(70, 0, ed)}px)`;
+    $("enddom").style.opacity = P(et, 0.45, 0.75);
+    $("endsub").style.opacity = P(et, 0.9, 1.25);
+    for (let k = 0; k < 6; k++) {
+      const eh = $("eh" + k);
+      const d = k * 0.12;
+      const p = P(et, 0.6 + d, 2.3 + d);
+      eh.style.opacity = String(clamp(P(et, 0.6 + d, 0.8 + d) - p * 0.7, 0, 1));
+      eh.style.transform = `translateY(${-460 * p}px)`;
+    }
+  };
+  setFrame(0);
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Boutique · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+  <style>
+    .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+    .shop-card {
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 22px;
+      padding: 26px 20px 20px;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      transition: transform 0.35s var(--spring), box-shadow 0.35s;
+    }
+    .shop-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .shop-card .sc-art { height: 92px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .shop-card .sc-house { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+    .shop-card h3 { font-family: var(--serif); font-weight: 450; font-size: 16.5px; line-height: 1.25; }
+    .shop-card .sc-meta { font-size: 11.5px; color: var(--muted); }
+    .shop-card .sc-price { font-family: var(--serif); font-size: 22px; font-weight: 450; margin-top: 4px; }
+    .shop-card .btn { margin-top: 10px; width: 100%; }
+    .shop-card .sc-boxlink { font-size: 11px; color: var(--gold); margin-top: 8px; text-decoration: none; }
+    .shop-card .sc-boxlink:hover { text-decoration: underline; }
+    .shop-pager { display: flex; gap: 8px; justify-content: center; margin-top: 30px; }
+    .shop-pager button {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+      font: 700 13px var(--sans); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .shop-pager button.on { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .shop-pager button:hover:not(.on) { border-color: var(--gold); color: var(--gold); }
+    .shop-note {
+      margin-top: 40px; padding: 22px 26px;
+      background: var(--surface); border: 1px solid var(--line-soft); border-radius: 18px;
+      font-size: 12.5px; color: var(--muted); max-width: 640px;
+    }
+  </style>
+</head>
+<body data-page="shop">
+  <header class="site-head"></header>
+
+  <main>
+    <section class="shell">
+      <div class="page-head">
+        <span class="eyebrow">The Boutique</span>
+        <h1 class="display">No luck required.</h1>
+        <p class="lede" style="max-width:52ch">A curated shelf at listed prices. Verified authentic, shipped free with tracking. Prefer the fun way? Anything with a box link below also lives in one.</p>
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+      <div class="shop-pager" id="shopPager"></div>
+      <div class="shop-note">
+        <b style="color:var(--ink)">All sales final.</b> Every piece ships sealed and verified authentic. If something arrives damaged, incorrect, or not as described, message support within 7 days and we make it right with a replacement or a full refund. Pieces over $500 ship insured with signature on delivery.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    function shopCatalog() {
+      const seen = new Map();
+      for (const d of allDrops()) seen.set(d.id, d);
+      try {
+        for (const d of JSON.parse(localStorage.getItem("covet_custom_items")) || []) {
+          if (!seen.has(d.id)) seen.set(d.id, d);
+        }
+      } catch {}
+      return seen;
+    }
+    function boxContaining(dropId) {
+      const c = CASES.find((k) => !k.free && k.drops.some((d) => d.id === dropId));
+      return c || null;
+    }
+    const SHOP_PAGES = 3; /* pages 2-3 mirror page 1 until the catalog fills out */
+    let shopPage = 0;
+    function renderShop(page = shopPage) {
+      shopPage = page;
+      const cat = shopCatalog();
+      const items = getShopItems().map((s) => ({ ...s, d: cat.get(s.id) })).filter((s) => s.d && !s.d.paused);
+      document.getElementById("shopPager").innerHTML = Array.from({ length: SHOP_PAGES }, (_, i) =>
+        `<button class="${i === shopPage ? "on" : ""}" onclick="renderShop(${i});scrollTo({top:0,behavior:'smooth'})">${i + 1}</button>`).join("");
+      document.getElementById("shopGrid").innerHTML = items.map(({ d, price }) => {
+        const box = boxContaining(d.id);
+        return `<div class="shop-card">
+          <div class="sc-art">${productArt(d, 76)}</div>
+          <span class="sc-house">${d.house}</span>
+          <h3>${d.name}</h3>
+          <span class="sc-meta">${d.conc || ""}${d.size ? " · " + d.size : ""}</span>
+          <div class="sc-price">${money(price)}</div>
+          <button class="btn btn-gold" onclick="shopBuy('${d.id}', ${price})">Buy · ships free</button>
+          ${box ? `<a class="sc-boxlink" href="case.html?c=${box.id}">or pull it in ${box.name.replace(/^The /, "the ")} · ${money(box.price)} ♥</a>` : ""}
+        </div>`;
+      }).join("") || `<p class="micro">The shelves are being restocked. Check back soon ♥</p>`;
+    }
+    window.renderShopPage = renderShop;
+    function shopBuy(id, price) {
+      const d = shopCatalog().get(id);
+      requireAddress(() => {
+        /* locked free-box credit spends on boxes only (matches Terms + Buyback Policy) */
+        const locked = typeof getLocked === "function" ? getLocked() : 0;
+        const spendable = Math.max(0, getWallet() - locked);
+        const applied = Math.min(spendable, price);
+        const rest = Math.max(0, price - applied);
+        openModal(`
+          <span class="eyebrow">The Boutique</span>
+          <h2>Confirm your order</h2>
+          <p class="modal-sub"><b style="color:var(--ink)">${d.house} ${d.name}</b> · ${money(price)}, free tracked shipping${price > 500 ? ", insured with signature on delivery" : ""}. All sales final; damaged or incorrect arrivals are always made right.</p>
+          <p class="addr-chip">${addrLine()}</p>
+          <div class="modal-actions" style="flex-direction:column">
+            ${applied > 0 ? `<button class="btn btn-gold" style="width:100%" onclick="shopConfirm('${id}', ${applied})">${rest > 0 ? `Use my ${money(applied)} balance + pay ${money(rest)}` : `Pay with my balance · ${money(price)}`}</button>` : ""}
+            <button class="btn ${applied > 0 ? "btn-ghost" : "btn-gold"}" style="width:100%" onclick="shopConfirm('${id}', 0)">Pay ${money(price)} by card (demo)</button>
+            <button class="btn btn-quiet" style="width:100%" onclick="closeModal()">Cancel</button>
+          </div>
+          ${applied > 0 ? `<p class="micro after-note">Your balance spends here just like on boxes.${(typeof getLocked === "function" && getLocked() > 0) ? ` Your ${money(getLocked())} free-box credit unlocks through box opens first.` : ""}</p>` : ""}
+        `);
+      });
+    }
+    function shopConfirm(id, useBalance) {
+      const d = shopCatalog().get(id);
+      if (useBalance > 0) setWallet(getWallet() - useBalance);
+      confettiBurst();
+      openModal(`
+        <span class="eyebrow">✨ Order placed</span>
+        <h2>It's yours, love</h2>
+        <p class="modal-sub">Your ${d.house} ${d.name} ships within 5 business days with tracking to your inbox.${useBalance > 0 ? ` ${money(useBalance)} of your balance covered part of it.` : ""} No luck needed today.</p>
+        <div class="modal-actions">
+          <a class="btn btn-gold" href="cases.html">Feeling lucky anyway?</a>
+          <button class="btn btn-quiet" onclick="closeModal()">Done</button>
+        </div>
+      `);
+    }
+    document.addEventListener("DOMContentLoaded", renderShop);
+  </script>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Wishlist · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+  <style>
+    .search-row { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+    .search-input {
+      flex: 0 1 420px;
+      padding: 14px 22px;
+      border-radius: 100px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-family: inherit; font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      box-shadow: var(--shadow-soft);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .search-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .fchip {
+      padding: 9px 20px;
+      border-radius: 100px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.35s var(--spring);
+    }
+    .fchip:hover { transform: translateY(-2px); border-color: var(--gold); color: var(--gold); }
+    .fchip.on {
+      background: linear-gradient(120deg, var(--gold), var(--gold-bright));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(224, 45, 86, 0.25);
+    }
+    .pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .pick-card {
+      position: relative;
+      background: var(--surface);
+      border: 1.5px solid var(--line-soft);
+      border-radius: 18px;
+      padding: 20px 16px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.35s var(--spring), border-color 0.3s, box-shadow 0.3s;
+      user-select: none;
+    }
+    .pick-card:hover { transform: translateY(-4px) rotate(-0.5deg); box-shadow: var(--shadow-soft); }
+    .pick-card.picked {
+      border-color: var(--gold);
+      box-shadow: 0 12px 34px var(--gold-dim);
+      background: linear-gradient(180deg, #fff, #fff2f5);
+    }
+    .pick-card .check {
+      position: absolute; top: 8px; right: 10px;
+      font-size: 20px; line-height: 1;
+      color: var(--line);
+      transition: color 0.25s, transform 0.35s var(--spring);
+    }
+    .pick-card.picked .check { color: var(--gold); transform: scale(1.2); }
+    .pick-card .ph { font-size: 9.5px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: var(--faint); margin-top: 10px; }
+    .info-btn {
+      position: absolute; bottom: 8px; right: 10px;
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 0; background: var(--bg2); color: var(--faint);
+      font-size: 11px; font-weight: 800; font-family: var(--serif); font-style: italic; line-height: 1;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, transform 0.3s var(--spring);
+    }
+    .info-btn:hover { background: var(--gold-dim); color: var(--gold); transform: scale(1.15); }
+    .pick-card .pn { font-family: var(--serif); font-weight: 470; font-size: 15px; line-height: 1.2; }
+    .pick-card .pv { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .pct-chip {
+      position: absolute; top: 8px; left: 10px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.04em;
+      color: #fff; background: linear-gradient(120deg, var(--gold), var(--gold-bright));
+      padding: 4px 10px; border-radius: 100px;
+      box-shadow: 0 4px 12px rgba(224, 45, 86, 0.3);
+    }
+    .no-results {
+      border: 2px dashed var(--line);
+      border-radius: 20px;
+      padding: 44px 20px;
+      text-align: center;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
+    /* your box: selected items with sliders */
+    .sel-row {
+      display: flex; align-items: center; gap: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 18px;
+      padding: 14px 20px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-soft);
+      flex-wrap: wrap;
+    }
+    .sel-art { width: 48px; display: flex; justify-content: center; flex-shrink: 0; }
+    .sel-name { width: 230px; flex-shrink: 0; }
+    .sel-name b { display: block; font-family: var(--serif); font-weight: 470; font-size: 15px; line-height: 1.2; }
+    .sel-name span { font-size: 11.5px; color: var(--muted); }
+    .sel-slide { flex: 1; min-width: 160px; }
+    .sel-slide .pfeel { margin-top: 1px; }
+    .pslider { width: 100%; height: 20px; accent-color: var(--gold); cursor: ew-resize; }
+    .sel-pct { font-family: var(--serif); font-size: 20px; font-weight: 460; color: var(--gold); width: 58px; text-align: right; flex-shrink: 0; }
+    .sel-x {
+      border: 0; background: var(--bg2);
+      width: 30px; height: 30px; border-radius: 50%;
+      color: var(--muted); font-size: 15px; line-height: 1;
+      flex-shrink: 0;
+      transition: background 0.25s, color 0.25s, transform 0.3s var(--spring);
+    }
+    .sel-x:hover { background: var(--gold-dim); color: var(--gold); transform: rotate(90deg); }
+    .pfeel { font-size: 10.5px; font-weight: 700; color: var(--gold); letter-spacing: 0.02em; }
+    .info-tip {
+      position: relative;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--gold-dim); color: var(--gold);
+      font-size: 10px; font-weight: 800;
+      cursor: help; vertical-align: middle;
+    }
+    .info-tip::after {
+      content: attr(data-tip);
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(4px);
+      width: 220px;
+      background: var(--ink); color: #fff;
+      font-size: 11px; font-weight: 500; line-height: 1.55;
+      padding: 11px 13px; border-radius: 12px;
+      box-shadow: 0 14px 34px rgba(41, 25, 43, 0.35);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s var(--ease-out), transform 0.3s var(--spring);
+      z-index: 30;
+    }
+    .info-tip:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .build-bar {
+      position: sticky; bottom: 18px; z-index: 50;
+      margin-top: 30px;
+      background: var(--ink); color: #fff;
+      border-radius: 100px;
+      padding: 14px 16px 14px 30px;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      box-shadow: 0 24px 60px rgba(41, 25, 43, 0.35);
+      flex-wrap: wrap;
+    }
+    .build-bar .bb-stat { font-size: 12.5px; color: rgba(255,255,255,0.65); }
+    .build-bar .bb-stat b { color: #fff; font-size: 15px; }
+    .build-bar .bb-price { font-family: var(--serif); font-size: 24px; font-weight: 440; }
+    /* floating side panel: your picks with mini odds sliders,
+       visible while you scroll; full list stays at the bottom */
+    .side-rail {
+      position: fixed; right: 18px; top: 50%; transform: translateY(-50%);
+      z-index: 40;
+      width: 256px;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px 18px 12px;
+      max-height: 72vh;
+      overflow-y: auto;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    /* tuck away once the full "Your box" section is on screen */
+    .side-rail.tucked { opacity: 0; transform: translateY(-50%) translateX(26px); pointer-events: none; }
+    .sr-head {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 4px;
+    }
+    .sr-count {
+      font-size: 10px; font-weight: 800;
+      color: #fff;
+      background: linear-gradient(120deg, var(--gold), var(--gold-bright));
+      border-radius: 100px;
+      padding: 3px 9px;
+      letter-spacing: 0;
+    }
+    .srr { padding: 10px 0 8px; border-bottom: 1px dashed var(--line-soft); }
+    .srr:last-of-type { border-bottom: 0; }
+    .srr-top { display: flex; align-items: center; gap: 9px; }
+    .srr-art { width: 28px; display: flex; justify-content: center; flex-shrink: 0; }
+    .srr-name { flex: 1; font-size: 11.5px; font-weight: 600; color: var(--ink); line-height: 1.25; }
+    .srr-pct { font-family: var(--serif); font-size: 15px; font-weight: 470; color: var(--gold); flex-shrink: 0; }
+    .srr .pslider { height: 16px; margin-top: 5px; }
+    .sr-link {
+      display: block; width: 100%;
+      text-align: center;
+      border: 0; background: none; cursor: pointer;
+      font-family: inherit; font-size: 10.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold);
+      padding: 10px 0 4px;
+    }
+    @media (max-width: 980px) { .side-rail { display: none !important; } }
+    @media (max-width: 640px) {
+      .sel-name { width: auto; flex: 1 1 100%; }
+      .sel-pct { width: auto; }
+    }
+  </style>
+</head>
+<body data-page="build">
+  <header class="site-head"></header>
+
+  <main>
+    <section class="page-head" style="padding-bottom:36px">
+      <div class="shell">
+        <span class="eyebrow">The Wishlist Box</span>
+        <h1 class="display">Get what you're <em>meant</em> to have.</h1>
+        <p class="lede">Your custom box: pick your pieces, pick your chances. Heart 2 to 8 you've been eyeing, most items we stock count, then slide how likely each one is below.</p>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="search-row">
+        <button class="btn btn-ghost" id="myBoxesBtn" style="display:none;flex:none" onclick="openMyBoxesModal()">My boxes <span style="color:var(--gold)">♥</span></button>
+        <input class="search-input" id="searchBox" type="search" placeholder="Search everything we stock…" oninput="renderGrid()" />
+        <span class="micro" id="searchCount"></span>
+      </div>
+      <div class="filter-row" id="filterRow"></div>
+      <div class="filter-row" id="sortRow" style="margin-top:-12px"></div>
+      <div class="pick-grid" id="pickGrid"></div>
+
+      <div id="selSection" style="display:none">
+        <div class="section-head" style="margin:56px 0 20px">
+          <div>
+            <span class="eyebrow">Your box</span>
+            <h2>Set your odds. <span class="info-tip" data-tip="Each slider is that piece's chance of being the one that ships. Slide up the one you really want; the rest rebalance on their own, always totaling 100%.">?</span></h2>
+          </div>
+          <span class="micro">Slide up what you want most · always totals 100%</span>
+        </div>
+        <div class="wish-name-row">
+          <input id="wishName" maxlength="32" placeholder="Name this box… (vanilla dreams, payday treat)" oninput="setWishName(this.value)" />
+          <button class="btn btn-ghost" id="saveBoxBtn" onclick="saveBoxClick()">Save this box</button>
+        </div>
+        <div id="selRows"></div>
+      </div>
+
+      <aside class="side-rail" id="sideRail" style="display:none"></aside>
+
+      <div class="build-bar">
+        <div class="bb-stat"><b data-wishcount>0</b> on your list · odds total 100%</div>
+        <div class="bb-stat">Top pull <b id="bbTop">·</b></div>
+        <div class="bb-price"><span style="display:block;font:700 10px/1.6 var(--sans, sans-serif);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted)">Box price</span><span id="bbPrice">·</span></div>
+        <button class="btn btn-gold" id="bbGo" disabled onclick="location.href='case.html?c=custom'">Heart at least 2 to unbox</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    function togglePick(id) {
+      const state = toggleWishlist(id);
+      if (state === null) {
+        openModal(`
+          <span class="eyebrow">Wishlist full</span>
+          <h2>Eight is the limit</h2>
+          <p class="modal-sub">A wishlist box holds up to 8 loves. Un-heart something first.</p>
+          <div class="modal-actions"><button class="btn btn-gold" onclick="closeModal()">Okay</button></div>`);
+        return;
+      }
+      normalizeWishPcts();
+      renderGrid();
+    }
+    function feelFor(pct) {
+      if (pct >= 60) return "Basically yours ✨";
+      if (pct >= 35) return "You really want this";
+      if (pct >= 15) return "In the running";
+      return "A long shot";
+    }
+    function onSlide(id, val, el) {
+      const m = setWishPct(id, parseFloat(val));
+      if (!m) return;
+      document.querySelectorAll("[data-pchip]").forEach((n) => (n.textContent = (m[n.dataset.pchip] || 0) + "% yours"));
+      document.querySelectorAll("[data-pnum]").forEach((n) => (n.textContent = (m[n.dataset.pnum] || 0) + "%"));
+      document.querySelectorAll("[data-pfeel]").forEach((n) => (n.textContent = feelFor(m[n.dataset.pfeel] || 0)));
+      document.querySelectorAll(".pslider").forEach((s) => { if (s !== el) s.value = m[s.dataset.pid] || 1; });
+      updateBar();
+    }
+    function updateBar() {
+      const picked = getWishlist();
+      const box = wishlistBoxFrom(picked);
+      document.querySelectorAll("[data-wishcount]").forEach((n) => (n.textContent = picked.length));
+      document.getElementById("bbGo").disabled = !box;
+      if (box) {
+        document.getElementById("bbPrice").textContent = money(box.price);
+        document.getElementById("bbGo").textContent = `Unbox my wishlist · ${money(box.price)}`;
+        document.getElementById("bbTop").textContent = money(Math.max(...box.drops.map((d) => d.value)));
+      } else {
+        document.getElementById("bbPrice").textContent = "·";
+        document.getElementById("bbGo").textContent = "Heart at least 2 to unbox";
+        document.getElementById("bbTop").textContent = "·";
+      }
+    }
+    /* keep the pick grid clear of the fixed rail, with a small gap */
+    function fitGridToRail(railVisible) {
+      const grid = document.getElementById("pickGrid");
+      if (!railVisible) { grid.style.marginRight = ""; return; }
+      const railLeft = window.innerWidth - 18 - 256; /* rail right offset + width */
+      const overlap = grid.getBoundingClientRect().right + (parseFloat(grid.style.marginRight) || 0) - (railLeft - 20);
+      grid.style.marginRight = overlap > 0 ? overlap + "px" : "";
+    }
+    function renderRail(picked) {
+      const rail = document.getElementById("sideRail");
+      fitGridToRail(picked.length > 0 && window.innerWidth > 980);
+      if (picked.length === 0) { rail.style.display = "none"; return; }
+      rail.style.display = "block";
+      const pcts = normalizeWishPcts();
+      const maxPct = Math.min(85, 100 - Math.max(0, picked.length - 1));
+      const items = allDropsUnique().filter((d) => picked.includes(d.id));
+      rail.innerHTML =
+        `<div class="sr-head"><span>♥ Your box</span><span class="sr-count">${picked.length}/8</span></div>` +
+        items.map((d) => {
+          const pct = pcts[d.id] || 0;
+          return `<div class="srr">
+            <div class="srr-top">
+              <span class="srr-art">${productArt(d, 22)}</span>
+              <span class="srr-name">${d.name}</span>
+              <b class="srr-pct" data-pnum="${d.id}">${pct}%</b>
+            </div>
+            ${picked.length >= 2 ? `<input type="range" class="pslider" min="1" max="${maxPct}" step="1" value="${pct}"
+              data-pid="${d.id}" oninput="onSlide('${d.id}', this.value, this)" onchange="renderSelection()" />
+            <div class="pfeel" data-pfeel="${d.id}" style="font-size:10px;margin-top:2px">${feelFor(pct)}</div>` : ""}
+          </div>`;
+        }).join("") +
+        `<button class="sr-link" onclick="document.getElementById('selSection').scrollIntoView({behavior:'smooth',block:'center'})">Full list ↓</button>`;
+    }
+    function renderSelection() {
+      const picked = getWishlist();
+      const pcts = normalizeWishPcts();
+      renderRail(picked);
+      const section = document.getElementById("selSection");
+      if (picked.length === 0) { section.style.display = "none"; return; }
+      section.style.display = "";
+      const maxPct = Math.min(85, 100 - Math.max(0, picked.length - 1));
+      const items = allDropsUnique().filter((d) => picked.includes(d.id));
+      document.getElementById("selRows").innerHTML = items.map((d) => {
+        const rar = RARITY[d.rarity];
+        const pct = pcts[d.id] || 0;
+        const slider = picked.length >= 2 ? `
+          <div class="sel-slide">
+            <input type="range" class="pslider" min="1" max="${maxPct}" step="1" value="${pct}"
+              data-pid="${d.id}" oninput="onSlide('${d.id}', this.value, this)" onchange="renderSelection();updateBar()" />
+            <div class="pfeel" data-pfeel="${d.id}">${feelFor(pct)}</div>
+          </div>
+          <b class="sel-pct" data-pnum="${d.id}">${pct}%</b>` : `
+          <div class="sel-slide"><span class="micro">Heart one more to set your odds</span></div>`;
+        return `<div class="sel-row" style="--rar:${rar.color}">
+          <div class="sel-art">${productArt(d, 40)}</div>
+          <div class="sel-name"><b>${d.house} ${d.name}</b><span>${money(d.value)} · ${d.size}</span></div>
+          ${slider}
+          <button class="sel-x" onclick="togglePick('${d.id}')" aria-label="Remove">×</button>
+        </div>`;
+      }).join("");
+    }
+    const FILTERS = [
+      ["all", "All"],
+      ["fragrance", "Fragrance"],
+      ["bag", "Bags"],
+      ["beauty", "Beauty"],
+      ["sunnies", "Sunglasses"],
+      ["clothes", "Clothes"],
+      ["home", "Home"],
+      ["charm", "Charms"],
+      ["phone", "Phone Cases"],
+    ];
+    let activeFilter = "all";
+    let activeSort = null;
+    const SORTS = [
+      ["low", "Price: low to high"],
+      ["high", "Price: high to low"],
+    ];
+    function kindOf(d) { return d.kind || "fragrance"; }
+    function setFilter(k) {
+      activeFilter = k;
+      renderGrid();
+    }
+    function setSort(k) {
+      activeSort = activeSort === k ? null : k;
+      renderGrid();
+    }
+    function renderFilters() {
+      document.getElementById("filterRow").innerHTML = FILTERS.map(([k, label]) =>
+        `<button class="fchip ${activeFilter === k ? "on" : ""}" onclick="setFilter('${k}')">${label}</button>`
+      ).join("");
+      document.getElementById("sortRow").innerHTML =
+        `<span class="micro" style="align-self:center;margin-right:2px">Sort</span>` +
+        SORTS.map(([k, label]) =>
+          `<button class="fchip ${activeSort === k ? "on" : ""}" onclick="setSort('${k}')">${label}</button>`
+        ).join("");
+    }
+    function renderGrid() {
+      renderFilters();
+      const picked = getWishlist();
+      const pcts = normalizeWishPcts();
+      const q = (document.getElementById("searchBox").value || "").trim().toLowerCase();
+      const all = allDropsUnique();
+      const inCat = activeFilter === "all" ? all : all.filter((d) => kindOf(d) === activeFilter);
+      const shown = q ? inCat.filter((d) => (d.house + " " + d.name).toLowerCase().includes(q)) : inCat;
+      if (activeSort === "low") shown.sort((a, b) => a.value - b.value);
+      if (activeSort === "high") shown.sort((a, b) => b.value - a.value);
+
+      document.getElementById("searchCount").textContent = q || activeFilter !== "all"
+        ? `${shown.length} of ${all.length} pieces`
+        : `${all.length} pieces · ready to heart`;
+
+      document.getElementById("pickGrid").innerHTML = shown.length === 0
+        ? (q
+            ? `<div class="no-results"><b style="font-family:var(--serif);font-size:18px;color:var(--ink)">Nothing matches "${q}"</b><br>Try a house name, like Chanel or Kayali.</div>`
+            : `<div class="no-results"><b style="font-family:var(--serif);font-size:18px;color:var(--ink)">New pieces landing soon ♥</b><br>This shelf is being stocked.</div>`)
+        : shown.map((d) => {
+            const on = picked.includes(d.id);
+            const pct = pcts[d.id] || 0;
+            const chip = on && picked.length >= 2 ? `<span class="pct-chip" data-pchip="${d.id}">${pct}% yours</span>` : "";
+            return `<div class="pick-card ${on ? "picked" : ""}" onclick="togglePick('${d.id}')">
+              ${chip}
+              <span class="check">${on ? "♥" : "♡"}</span>
+              <div style="display:flex;justify-content:center">${productArt(d, 54)}</div>
+              <div class="ph">${d.house}</div>
+              <div class="pn">${d.name}</div>
+              <div class="pv">${d.size} · ${money(d.value)}</div>
+              <button class="info-btn" onclick="event.stopPropagation();showItemInfo('${d.id}')" aria-label="About this piece">i</button>
+            </div>`;
+          }).join("");
+
+      renderSelection();
+      updateBar();
+    }
+    /* item info popup from the little i button */
+    const KIND_LABELS = { fragrance: "Fragrance", bag: "Handbag", beauty: "Beauty", sunnies: "Sunglasses", clothes: "Clothes", home: "Home", charm: "Charm", jewelry: "Jewelry", watch: "Watch", phone: "Phone case" };
+    function showItemInfo(id) {
+      const d = allDropsUnique().find((x) => x.id === id);
+      if (!d) return;
+      const on = getWishlist().includes(id);
+      const detail = [KIND_LABELS[kindOf(d)] || "Piece", d.size, d.conc].filter(Boolean).join(" · ");
+      openModal(`
+        <div style="display:flex;justify-content:center;margin-bottom:16px;color:var(--gold)">${productArt(d, 92)}</div>
+        <span class="eyebrow">${d.house}</span>
+        <h2 style="margin-top:6px">${d.name}</h2>
+        <p class="modal-sub">${detail}. Market value ${money(d.value)}. Verified authentic before it ships, and sells back instantly if it's not the one.</p>
+        <div class="modal-actions">
+          <button class="btn btn-gold" onclick="togglePick('${d.id}');closeModal()">${on ? "Remove from my box" : "♥ Add to my box"}</button>
+          <button class="btn btn-quiet" onclick="closeModal()">Close</button>
+        </div>
+      `);
+    }
+    /* tuck the rail once the full "Your box" section has been reached */
+    function railTuck() {
+      const sel = document.getElementById("selSection");
+      const reached = sel.style.display !== "none" && sel.getBoundingClientRect().top < window.innerHeight * 0.8;
+      document.getElementById("sideRail").classList.toggle("tucked", reached);
+    }
+    function savedBoxPrice(b) {
+      const pool = allDrops().filter((d) => b.ids.includes(d.id));
+      const blended = pool.reduce((s, d) => s + ((b.pcts[d.id] || 1) / 100) * d.value, 0);
+      const costEV = pool.reduce((s, d) => s + ((b.pcts[d.id] || 1) / 100) * costOf(d), 0);
+      return Math.max(10, Math.ceil(blended * 0.9), Math.ceil(costEV * 1.25 + 6));
+    }
+    function refreshMyBoxesBtn() {
+      const n = getSavedBoxes().length;
+      const btn = document.getElementById("myBoxesBtn");
+      btn.style.display = n ? "" : "none";
+      btn.innerHTML = `My boxes <span style="color:var(--gold)">♥</span> ${n}`;
+    }
+    function openMyBoxesModal() {
+      const list = getSavedBoxes();
+      if (!list.length) { closeModal(); refreshMyBoxesBtn(); return; }
+      openModal(`
+        <span class="eyebrow">Saved from your wishlist</span>
+        <h2>My custom <em style="font-style:italic;font-weight:320">boxes.</em></h2>
+        <div class="mybox-list">
+          ${list.map((b) => {
+            const pool = allDrops().filter((d) => b.ids.includes(d.id));
+            const top = pool.slice().sort((x, y) => y.value - x.value)[0];
+            return `<div class="mybox-row">
+              <div class="sc-arts">${pool.slice(0, 3).map((d) => productArt(d, 26)).join("")}</div>
+              <div class="mb-meta"><b>${b.name}</b><span class="micro">${pool.length} pieces · top pull ${top ? top.name : "·"} · ${money(savedBoxPrice(b))}</span></div>
+              <div class="sc-actions">
+                <button class="btn btn-gold" onclick="if(loadSavedBox('${b.sid}'))location.href='case.html?c=custom'">Unbox · ${money(savedBoxPrice(b))}</button>
+                <button class="btn btn-ghost" onclick="loadSavedBox('${b.sid}');location.reload()">Edit</button>
+                <button class="btn btn-quiet" onclick="deleteSavedBox('${b.sid}');openMyBoxesModal()">✕</button>
+              </div>
+            </div>`;
+          }).join("")}
+        </div>
+      `, { style: "width:min(620px,94vw);max-height:86vh;overflow-y:auto" });
+    }
+    function saveBoxClick() {
+      const snap = saveCurrentBox(document.getElementById("wishName").value);
+      if (!snap) return;
+      document.getElementById("wishName").value = snap.name;
+      const btn = document.getElementById("saveBoxBtn");
+      btn.textContent = "Saved ♥";
+      setTimeout(() => (btn.textContent = "Save this box"), 1400);
+      refreshMyBoxesBtn();
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("wishName").value = getWishName();
+      refreshMyBoxesBtn();
+      renderGrid();
+      railTuck();
+      window.addEventListener("scroll", railTuck, { passive: true });
+      window.addEventListener("resize", () => fitGridToRail(getWishlist().length > 0 && window.innerWidth > 980));
+    });
+  </script>
+</body>
+</html>

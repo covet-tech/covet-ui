@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fairness · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+</head>
+<body data-page="fairness">
+  <header class="site-head"></header>
+
+  <main>
+    <section class="page-head" style="padding-bottom:44px">
+      <div class="shell">
+        <span class="eyebrow">Provably fair</span>
+        <h1 class="display">Every pull is <em>verifiable.</em></h1>
+        <p class="lede">The result of a box is fixed before you open it, provable with math, and checkable by you. No trust required, only arithmetic.</p>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="fair-grid">
+        <div class="fair-copy">
+          <h3>1 · random.org deals the cards</h3>
+          <p>Every <code>server seed</code> comes from random.org's signed randomness service: true atmospheric noise, cryptographically signed. We publish two things before the seed serves a single pull: its SHA-256 hash and random.org's signature. The hash locks us in, and the signature proves we didn't generate a thousand seeds and keep a favorite. If random.org is ever unreachable, the seed is generated locally and clearly labeled house-generated; the commitment and your verification work identically.</p>
+
+          <h3>2 · You add your own randomness</h3>
+          <p>Your browser holds a <code>client seed</code> you can edit at any time. Because we never know it in advance, we cannot pick outcomes even if we wanted to.</p>
+
+          <h3>3 · The pull is pure arithmetic</h3>
+          <p>Each open combines the three values: <code>SHA-256(serverSeed : clientSeed : nonce)</code>. The first 8 hex characters become a number, reduced to a roll from 0 to 100. The roll maps onto the box's published odds table: if Baccarat Rouge 540 occupies 99.4 to 100, a roll of 99.63 pulls it.</p>
+
+          <h3>4 · Then we show our hand</h3>
+          <p>When a server seed rotates, the retired seed is revealed on your account page, next to its random.org signature. Recompute the hash, recompute your rolls, confirm every pull you made. The verifier on this page runs the same math live. Seeds stay public forever.</p>
+
+          <h3>5 · The giveaway has a referee</h3>
+          <p>The weekly giveaway winner is drawn by random.org's signed draw service, and the signed certificate is linked from every winner announcement. Not our pick, not our server, provably.</p>
+
+          <h3>The floor, in writing</h3>
+          <p>Odds tables are printed on every box and sum to exactly 100%. Market values are checked against current retail and resale prices. Every reveal comes with an instant buyback offer, shown the moment your piece lands, and your balance is always yours to transfer back to your bank.</p>
+        </div>
+
+        <div class="verifier">
+          <h3>Live verifier</h3>
+          <div class="field">
+            <label>Server seed (revealed)</label>
+            <input id="vServer" value="a7c1e9f3b2d8406c5e1f9a3b7d2c8e40" />
+          </div>
+          <div class="field">
+            <label>Server seed hash (published before your pulls)</label>
+            <input id="vHash" readonly />
+          </div>
+          <div class="field">
+            <label>Your client seed</label>
+            <input id="vClient" value="riley-lucky-13" />
+          </div>
+          <div class="field">
+            <label>Nonce (pull number)</label>
+            <input id="vNonce" type="number" value="7" min="0" />
+          </div>
+          <div class="field">
+            <label>Box</label>
+            <select id="vCase"></select>
+          </div>
+          <button class="btn btn-gold" style="width:100%" onclick="verifyPull()">Recompute this pull</button>
+          <div class="verify-result" id="vResult">Edit any field and recompute. The same inputs always produce the same piece.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    async function sha256hex(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+    async function updateHash() {
+      document.getElementById("vHash").value = await sha256hex(document.getElementById("vServer").value);
+    }
+    async function verifyPull() {
+      const server = document.getElementById("vServer").value;
+      const client = document.getElementById("vClient").value;
+      const nonce = document.getElementById("vNonce").value;
+      const kase = getCase(document.getElementById("vCase").value);
+      const hex = await sha256hex(`${server}:${client}:${nonce}`);
+      const roll = (parseInt(hex.slice(0, 8), 16) % 1000000) / 10000; /* 0 to 99.9999 */
+      const drop = rollDrop(kase, roll);
+      const rar = RARITY[drop.rarity];
+      document.getElementById("vResult").innerHTML =
+        `Digest <code style="font-size:11px">${hex.slice(0, 16)}…</code> → roll <span class="roll">${roll.toFixed(4)}</span><br>
+         <b>${drop.house} ${drop.name}</b> · ${drop.size} · <span class="rarity-chip" style="--rar:${rar.color}">${rar.label}</span>`;
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("vCase").innerHTML = CASES.map((c) => `<option value="${c.id}">${c.name} · ${money(c.price)}</option>`).join("");
+      document.getElementById("vServer").addEventListener("input", updateHash);
+      updateHash();
+    });
+  </script>
+</body>
+</html>

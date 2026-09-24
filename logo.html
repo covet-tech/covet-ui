@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logo · Covet</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=269" />
+  <style>
+    .logo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr)); gap: 22px; }
+    .logo-card {
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      padding: 30px 32px;
+    }
+    .logo-card h3 { font-family: var(--serif); font-weight: 440; font-size: 19px; margin-bottom: 4px; }
+    .logo-card .micro { display: block; margin-bottom: 22px; }
+    .lg-row { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+    .lg-big {
+      width: 190px; height: 190px; border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg);
+      border: 1px solid var(--line-soft);
+    }
+    .lg-avatars { display: flex; gap: 14px; align-items: center; }
+    .lg-av {
+      width: 84px; height: 84px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+    }
+    .lg-av.cream { background: #fff7f3; }
+    .lg-av.cherry { background: linear-gradient(135deg, #e02d56, #ff5f85); }
+    .lg-av.ink { background: #29192b; }
+    .lg-av svg { width: 62%; height: 62%; }
+    .lg-big svg { width: 72%; height: 72%; }
+    .avlabel { text-align: center; }
+    .avlabel .micro { margin-top: 8px; }
+  </style>
+</head>
+<body data-page="logo" data-no-gate>
+  <header class="site-head"></header>
+
+  <main>
+    <section class="page-head" style="padding-bottom:36px">
+      <div class="shell">
+        <span class="eyebrow">Brand · internal</span>
+        <h1 class="display">The <em>mark.</em></h1>
+        <p class="lede">Four directions for the Instagram avatar and everywhere small. Each shown at profile-picture size on cream, cherry, and ink. All vector, so they export crisp at any size.</p>
+      </div>
+    </section>
+
+    <section class="shell" style="padding-bottom:80px">
+      <div class="logo-grid" id="logoGrid"></div>
+      <p class="micro" style="margin-top:22px">Letterforms are live Fraunces text inside the SVG, so the dev exports finals by outlining the type (any design tool does this in one click). The gift-box marks are pure geometry, ready as they are.</p>
+    </section>
+  </main>
+
+  <footer class="site-foot"></footer>
+
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script src="js/app.js?v=269"></script>
+  <script>
+    const F = `font-family="Fraunces, Georgia, serif" font-weight="500"`;
+    /* shared gift-box glyph: lacquer box, lid ajar, bow puffs */
+    function boxGlyph(x, y, s, boxFill, ribbonFill, bowFill, bowStroke) {
+      bowFill = bowFill || ribbonFill; bowStroke = bowStroke || boxFill;
+      return `<g transform="translate(${x} ${y}) scale(${s / 100})">
+        <rect x="16" y="46" width="68" height="46" rx="9" fill="${boxFill}"/>
+        <rect x="43" y="46" width="14" height="46" fill="${ribbonFill}"/>
+        <g transform="rotate(-6 50 34)">
+          <path d="M50 27 C36 27 26.5 19 28.5 10.5 C30.5 3.5 40.5 4 46 12 C48.3 15.4 50 21.5 50 27 Z" fill="${bowFill}" stroke="${bowStroke}" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M51 27 C65 27 74.5 19 72.5 10.5 C70.5 3.5 60.5 4 55 12 C52.7 15.4 51 21.5 51 27 Z" fill="${bowFill}" stroke="${bowStroke}" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="50.5" cy="25.5" r="5.5" fill="${bowFill}" stroke="${bowStroke}" stroke-width="2"/>
+          <rect x="8" y="26" width="84" height="15" rx="7.5" fill="${boxFill}"/>
+          <rect x="45" y="24" width="11" height="19" rx="2.5" fill="${ribbonFill}"/>
+        </g>
+      </g>`;
+    }
+    const OPTIONS = [
+      {
+        name: "01 · The Monogram",
+        note: "C O over V T, tight kern, the T in cherry. Cleanest at tiny sizes.",
+        svg: (ink, accent) => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <text x="28" y="44" ${F} font-size="44" text-anchor="middle" fill="${ink}">C</text>
+          <text x="72" y="44" ${F} font-size="44" text-anchor="middle" fill="${ink}">O</text>
+          <text x="28" y="90" ${F} font-size="44" text-anchor="middle" fill="${ink}">V</text>
+          <text x="72" y="90" ${F} font-size="44" text-anchor="middle" fill="${accent}">T</text>
+        </svg>`,
+      },
+      {
+        name: "02 · The Gift O",
+        note: "Same stack, but the O is the gift box. The brand story inside the monogram.",
+        svg: (ink, accent) => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <text x="28" y="44" ${F} font-size="44" text-anchor="middle" fill="${ink}">C</text>
+          ${boxGlyph(54, 10, 36, accent, accent === "#fff" ? "#e02d56" : (ink === "#fff" ? "#fff7f3" : "#fff"))}
+          <text x="28" y="90" ${F} font-size="44" text-anchor="middle" fill="${ink}">V</text>
+          <text x="72" y="90" ${F} font-size="44" text-anchor="middle" fill="${ink}">T</text>
+        </svg>`,
+      },
+      {
+        name: "03 · The Bow T",
+        note: "The T wears the bow, like the crossbar is the lid of the box. Subtle until you see it.",
+        svg: (ink, accent) => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <text x="28" y="44" ${F} font-size="44" text-anchor="middle" fill="${ink}">C</text>
+          <text x="72" y="44" ${F} font-size="44" text-anchor="middle" fill="${ink}">O</text>
+          <text x="28" y="90" ${F} font-size="44" text-anchor="middle" fill="${ink}">V</text>
+          <g>
+            <rect x="56" y="56" width="32" height="8" rx="3" fill="${accent}"/>
+            <rect x="68" y="56" width="8" height="36" rx="3" fill="${accent}"/>
+            <path d="M72 56 C63 56 56 51 57.5 45.5 C58.8 41.5 65.5 41.5 69.5 47 C71 49 72 52.5 72 56 Z" fill="${accent}"/>
+            <path d="M72 56 C81 56 88 51 86.5 45.5 C85.2 41.5 78.5 41.5 74.5 47 C73 49 72 52.5 72 56 Z" fill="${accent}"/>
+            <circle cx="72" cy="54.4" r="3.6" fill="${ink === "#fff" ? "#29192b" : "#fff"}" opacity="0.001"/>
+          </g>
+        </svg>`,
+      },
+      {
+        name: "04 · The Box Alone",
+        note: "The gift with the whole domain under it. Reads as covet.gg at every size, strongest as a sticker and app icon.",
+        svg: (ink, accent) => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          ${boxGlyph(8, 0, 78, accent, accent === "#fff" ? "#e02d56" : (ink === "#fff" ? "#fff7f3" : "#fff"))}
+          <text x="50" y="97" ${F} font-size="15" letter-spacing="1" text-anchor="middle" fill="${ink}">covet.gg</text>
+        </svg>`,
+      },
+    ];
+    document.getElementById("logoGrid").innerHTML = OPTIONS.map((o) => `
+      <div class="logo-card">
+        <h3>${o.name}</h3>
+        <span class="micro">${o.note}</span>
+        <div class="lg-row">
+          <div class="lg-big">${o.svg("#29192b", "#e02d56")}</div>
+          <div class="lg-avatars">
+            <div class="avlabel"><div class="lg-av cream">${o.svg("#29192b", "#e02d56")}</div><span class="micro">cream</span></div>
+            <div class="avlabel"><div class="lg-av cherry">${o.svg("#fff", "#fff")}</div><span class="micro">cherry</span></div>
+            <div class="avlabel"><div class="lg-av ink">${o.svg("#fff", "#e02d56")}</div><span class="micro">ink</span></div>
+          </div>
+        </div>
+      </div>`).join("");
+  </script>
+</body>
+</html>

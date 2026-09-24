@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Covet promo renderer</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --ink: #29192b; --muted: #7c6b7e; --gold: #e02d56; --gold-bright: #ff5f85;
+      --cream: #fff7f3; --blush: #fdeee9;
+      --serif: "Fraunces", Georgia, serif; --sans: "Inter", sans-serif;
+    }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--cream); }
+    #stage { position: relative; width: 1080px; height: 1920px; font-family: var(--sans); overflow: hidden; }
+    .bgwash { position: absolute; inset: 0; background: linear-gradient(160deg, #fff7f3, #fdeee9 60%, #ffe9e0); }
+    .bgcherry { position: absolute; inset: 0; background: linear-gradient(160deg, #d92747, #ff5f85 65%, #e02d56); opacity: 0; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(90px); }
+    .blob.a { width: 700px; height: 700px; right: -200px; top: -160px; background: radial-gradient(circle, rgba(255,95,133,0.30), transparent 70%); }
+    .blob.b { width: 640px; height: 640px; left: -220px; bottom: -160px; background: radial-gradient(circle, rgba(255,190,120,0.32), transparent 70%); }
+    .scene { position: absolute; inset: 0; opacity: 0; }
+    .bigline { font-family: var(--serif); font-weight: 400; color: var(--ink); font-size: 108px; line-height: 1.06; letter-spacing: -0.01em; text-align: center; }
+    .bigline em { font-style: italic; color: var(--gold); font-weight: 340; }
+    .kicker { font-family: var(--sans); font-size: 30px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); text-align: center; }
+    .sub { font-family: var(--sans); font-size: 38px; color: var(--muted); text-align: center; font-weight: 500; }
+    .domain-pill {
+      position: absolute; left: 50%; top: 175px; transform: translateX(-50%);
+      font-family: var(--serif); font-size: 40px; font-weight: 500; letter-spacing: 0.06em;
+      color: #fff; background: rgba(41, 25, 43, 0.82);
+      padding: 18px 52px; border-radius: 200px; z-index: 60;
+    }
+    /* gift box */
+    .gift { position: absolute; left: 50%; }
+    .g-box { position: relative; width: 460px; height: 285px; border-radius: 42px;
+      background: linear-gradient(135deg, #e02d56, #ff5f85 70%, #e02d56);
+      box-shadow: 0 70px 130px rgba(224, 45, 86, 0.4), inset 0 14px 32px rgba(255,255,255,0.28); }
+    .g-box i { position: absolute; left: 50%; top: 0; bottom: 0; transform: translateX(-50%); width: 66px; border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,247,243,0.95), rgba(255,232,238,0.85)); }
+    .g-lid { position: absolute; left: 50%; width: 520px; height: 84px; border-radius: 28px; z-index: 2;
+      background: linear-gradient(135deg, #e02d56, #ff5f85 65%, #e02d56);
+      box-shadow: 0 36px 80px rgba(224, 45, 86, 0.34), inset 0 10px 22px rgba(255,255,255,0.3); }
+    .g-lid i { position: absolute; left: 50%; top: 0; bottom: 0; transform: translateX(-50%); width: 76px; border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,247,243,0.95), rgba(255,232,238,0.85)); }
+    .g-lid::before, .g-lid::after { content: ""; position: absolute; top: -58px; width: 118px; height: 76px;
+      background: linear-gradient(135deg, #fff6f1 20%, #ffd9e0 70%, #ffc4d4);
+      border-radius: 62% 38% 66% 34% / 72% 64% 36% 28%;
+      box-shadow: inset 0 -16px 30px rgba(224,45,86,0.32); }
+    .g-lid::before { right: calc(50% - 9px); transform: rotate(-34deg); }
+    .g-lid::after { left: calc(50% - 9px); transform: rotate(34deg) scaleX(-1); }
+    .g-knot { position: absolute; left: 50%; top: -36px; transform: translateX(-50%); width: 52px; height: 47px; z-index: 3;
+      background: linear-gradient(135deg, #fff6f1, #ffd9e0); border-radius: 18px;
+      box-shadow: inset 0 -9px 16px rgba(224,45,86,0.3); }
+    .g-glow { position: absolute; left: 50%; transform: translateX(-50%); width: 760px; height: 560px; border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(255,95,133,0.5), rgba(255,190,120,0.18) 55%, transparent 95%);
+      filter: blur(40px); }
+    /* box cards (scene 2) */
+    .pickcard { position: absolute; width: 780px; background: #fff; border-radius: 44px; padding: 44px 310px 40px 52px;
+      box-shadow: 0 40px 110px rgba(41, 25, 43, 0.16); border: 2px solid rgba(43,24,39,0.06); }
+    .pickcard .num { font-size: 22px; font-weight: 800; letter-spacing: 0.2em; color: #ab9cab; text-transform: uppercase; }
+    .pickcard .nm { font-family: var(--serif); font-size: 62px; font-weight: 450; color: var(--ink); line-height: 1.05; margin: 8px 0 4px; }
+    .pickcard .pr { font-family: var(--serif); font-size: 44px; font-weight: 460; color: var(--gold); }
+    .pickcard .arts { position: absolute; right: 44px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px; align-items: center; }
+    /* reel (scene 3) */
+    .reelwrap { position: absolute; left: 0; right: 0; top: 780px; height: 560px; overflow: hidden; }
+    .reelstrip { position: absolute; top: 40px; display: flex; gap: 26px; }
+    .rcard { flex: 0 0 320px; height: 430px; border-radius: 40px; background: #fff; border: 2px solid rgba(43,24,39,0.07);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+      box-shadow: 0 30px 80px rgba(41,25,43,0.12); text-align: center; padding: 30px 22px; }
+    .rcard .h { font-size: 20px; font-weight: 800; letter-spacing: 0.16em; color: #ab9cab; text-transform: uppercase; }
+    .rcard .n { font-family: var(--serif); font-size: 34px; font-weight: 470; color: var(--ink); line-height: 1.15; }
+    .needle { position: absolute; left: 50%; top: 10px; bottom: 10px; width: 7px; transform: translateX(-50%);
+      background: linear-gradient(180deg, #e02d56, #ff5f85); border-radius: 6px; z-index: 5;
+      box-shadow: 0 0 30px rgba(224,45,86,0.5); }
+    .needle::before, .needle::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%) rotate(45deg);
+      width: 22px; height: 22px; background: #e02d56; border-radius: 5px; }
+    .needle::before { top: -10px; } .needle::after { bottom: -10px; }
+    /* odds rows (scene 4) */
+    .oddsrow { position: absolute; left: 90px; right: 90px; height: 168px; background: #fff; border-radius: 36px;
+      border: 2px solid rgba(43,24,39,0.06); box-shadow: 0 26px 70px rgba(41,25,43,0.1);
+      display: flex; align-items: center; gap: 34px; padding: 0 52px; }
+    .oddsrow .nm2 { flex: 1; }
+    .oddsrow .nm2 b { display: block; font-family: var(--serif); font-size: 40px; font-weight: 470; color: var(--ink); line-height: 1.1; }
+    .oddsrow .nm2 span { font-size: 24px; color: var(--muted); }
+    .oddsrow .val { font-family: var(--serif); font-size: 52px; font-weight: 460; color: var(--ink); }
+    .oddsrow .pct { font-size: 30px; font-weight: 700; color: var(--muted); width: 130px; text-align: right; }
+    /* result card (scene 5) */
+    .result { position: absolute; left: 50%; top: 700px; width: 760px; margin-left: -380px; background: #fff; border-radius: 56px;
+      padding: 70px 60px 60px; text-align: center; box-shadow: 0 60px 140px rgba(224,45,86,0.22); }
+    .result .rr { font-size: 26px; font-weight: 800; letter-spacing: 0.2em; color: #dfa112; text-transform: uppercase; }
+    .result .rn { font-family: var(--serif); font-size: 66px; font-weight: 430; color: var(--ink); line-height: 1.08; margin: 18px 0 8px; }
+    .result .rv { font-size: 30px; color: var(--muted); margin-bottom: 34px; }
+    .result .offer { display: flex; justify-content: center; gap: 60px; }
+    .result .offer div { text-align: center; }
+    .result .offer small { display: block; font-size: 22px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #ab9cab; margin-bottom: 6px; }
+    .result .offer b { font-family: var(--serif); font-size: 64px; font-weight: 470; color: var(--ink); }
+    .result .offer .bb b { color: var(--gold); }
+    .confetti { position: absolute; width: 22px; height: 15px; border-radius: 4px; z-index: 50; }
+    .heartp { position: absolute; font-size: 44px; z-index: 50; color: #ff5f85; }
+    .spark { position: absolute; font-size: 54px; z-index: 6; }
+    .endword { font-family: var(--serif); color: #fff; font-size: 200px; font-weight: 480; letter-spacing: 0.02em; text-align: center; }
+    .endsub { font-family: var(--sans); color: rgba(255,255,255,0.92); font-size: 44px; font-weight: 600; text-align: center; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <script src="js/data.js?v=269"></script>
+  <script src="js/art.js?v=269"></script>
+  <script>
+  /* ============ deterministic 9:16 promo · 24fps ============
+     window.setFrame(f) renders frame f. Total = DUR * FPS. */
+  const FPS = 24, DUR = 22;
+  window.TOTAL_FRAMES = DUR * FPS;
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  /* progress of t within [t0,t1] */
+  const P = (t, t0, t1) => clamp((t - t0) / (t1 - t0), 0, 1);
+  const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  const easeIn = (x) => x * x * x;
+  const spring = (x) => 1 + Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * 2.0944) * (x < 1 ? 1 : 0);
+  const backOut = (x) => { const c = 1.70158 + 1; return 1 + c * Math.pow(x - 1, 3) + (c - 0.70158) * Math.pow(x - 1, 2); };
+  function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let z = Math.imul(seed ^ seed >>> 15, 1 | seed); z = z + Math.imul(z ^ z >>> 7, 61 | z) ^ z; return ((z ^ z >>> 14) >>> 0) / 4294967296; }; }
+
+  const drop = (id) => allDrops().find((d) => d.id === id);
+  const stage = document.getElementById("stage");
+
+  /* ---------- static DOM built once ---------- */
+  const PICKS = [
+    { id: "itgirl", num: "No. V", name: "The It Girl Box", price: "$25", items: ["kayali10", "delina10", "br540_35"] },
+    { id: "handbag", num: "No. XIII", name: "The Arm Candy Box", price: "$250", items: ["polene1", "marmont", "classicflap"] },
+    { id: "charms", num: "No. XVI", name: "The Charm Box", price: "$6", items: ["sonnyangel", "labubu", "vworb"] },
+  ];
+  const REEL_ITEMS = ["kayali10", "marmont", "br540_35", "sonnyangel", "delina75", "classicflap", "lipbutter", "rolex28", "labubu", "santal15", "birkin25", "lespecs"];
+  const WIN_AT = 17; /* strip index that lands under the needle */
+  const STRIP = []; for (let i = 0; i < 26; i++) STRIP.push(REEL_ITEMS[i % REEL_ITEMS.length]);
+  STRIP[WIN_AT] = "classicflap";
+  const ODDS_ROWS = [
+    ["br540_35", "$195", "0.6%"], ["soleil50", "$98", "5.4%"], ["missdior10", "$14", "22%"],
+  ];
+
+  const conf = rng(7);
+  const CONFETTI = Array.from({ length: 42 }, (_, i) => ({
+    x: 240 + conf() * 600, drift: (conf() - 0.5) * 420, delay: conf() * 0.5,
+    color: ["#e02d56", "#ff5f85", "#eeb020", "#ffd9e0", "#fff"][i % 5],
+    spin: (conf() - 0.5) * 900, size: 0.7 + conf() * 0.9,
+  }));
+  const HEARTS = Array.from({ length: 7 }, (_, i) => ({
+    x: 340 + conf() * 400, drift: (conf() - 0.5) * 300, delay: conf() * 0.4, size: 0.7 + conf() * 1.0,
+  }));
+
+  stage.innerHTML = `
+    <div class="bgwash"></div>
+    <div class="blob a"></div><div class="blob b"></div>
+    <div class="bgcherry" id="bgCherry"></div>
+
+    <div class="scene" id="s1">
+      <div class="kicker" style="position:absolute;left:0;right:0;top:430px" id="s1k">real designer mystery boxes</div>
+      <div class="bigline" style="position:absolute;left:0;right:0;top:510px"><span id="s1a" style="display:inline-block">never pay</span><br><em id="s1b" style="display:inline-block">retail again ♥</em></div>
+      <div class="gift" id="s1gift" style="top:1010px">
+        <div class="g-glow" style="top:60px"></div>
+        <div class="g-lid" id="s1lid" style="top:0"><i></i><span class="g-knot"></span></div>
+        <div class="g-box" style="margin-top:78px"><i></i></div>
+      </div>
+      <span class="spark" id="s1sp1" style="left:200px;top:960px">✨</span>
+      <span class="spark" id="s1sp2" style="right:190px;top:1120px;color:#ff5f85">♥</span>
+    </div>
+
+    <div class="scene" id="s2">
+      <div class="kicker" style="position:absolute;left:0;right:0;top:300px">step one</div>
+      <div class="bigline" style="position:absolute;left:0;right:0;top:378px;font-size:96px">pick your <em>box.</em></div>
+      ${PICKS.map((p, i) => `
+        <div class="pickcard" id="pc${i}" style="top:${640 + i * 300}px;left:150px">
+          <div class="num">${p.num}</div>
+          <div class="nm">${p.name}</div>
+          <div class="pr">${p.price}</div>
+          <div class="arts">${p.items.map((id) => `<span style="display:inline-block">${productArt(drop(id), 84)}</span>`).join("")}</div>
+        </div>`).join("")}
+      <div class="sub" style="position:absolute;left:0;right:0;top:1610px">from $6 to the $1,500 box where birkins live</div>
+    </div>
+
+    <div class="scene" id="s3">
+      <div class="kicker" style="position:absolute;left:0;right:0;top:430px">step two</div>
+      <div class="bigline" style="position:absolute;left:0;right:0;top:508px;font-size:96px">watch it get<br><em>picked, live.</em></div>
+      <div class="reelwrap">
+        <div class="reelstrip" id="strip">
+          ${STRIP.map((id, i) => `<div class="rcard" id="rc${i}"><span style="color:#e02d56">${productArt(drop(id), 150)}</span><div><div class="h">${drop(id).house}</div><div class="n">${drop(id).name}</div></div></div>`).join("")}
+        </div>
+        <div class="needle"></div>
+      </div>
+      <div class="sub" style="position:absolute;left:0;right:0;top:1440px">provably fair · verifiable pull by pull</div>
+    </div>
+
+    <div class="scene" id="s4">
+      <div class="kicker" style="position:absolute;left:0;right:0;top:400px">no secrets</div>
+      <div class="bigline" style="position:absolute;left:0;right:0;top:478px;font-size:96px">the odds?<br><em>printed. all of them.</em></div>
+      ${ODDS_ROWS.map((r, i) => `
+        <div class="oddsrow" id="or${i}" style="top:${880 + i * 200}px">
+          <span style="color:#e02d56">${productArt(drop(r[0]), 92)}</span>
+          <div class="nm2"><b>${drop(r[0]).house} ${drop(r[0]).name}</b><span>market value</span></div>
+          <div class="val">${r[1]}</div>
+          <div class="pct">${r[2]}</div>
+        </div>`).join("")}
+      <div class="sub" style="position:absolute;left:0;right:0;top:1560px">screenshot them. check them. that's the point.</div>
+    </div>
+
+    <div class="scene" id="s5">
+      <div class="kicker" style="position:absolute;left:0;right:0;top:440px">your pull, your call</div>
+      <div class="bigline" style="position:absolute;left:0;right:0;top:518px;font-size:88px">ship it free, or<br><em>sell it back instantly.</em></div>
+      <div class="result" id="resCard">
+        <div class="rr">✨ Grail · 1.2% pull</div>
+        <div style="margin:26px 0 4px">${productArt(drop("classicflap"), 190)}</div>
+        <div class="rn">Chanel<br><span style="font-style:italic;font-weight:330">Classic Flap, vintage</span></div>
+        <div class="rv">guaranteed authentic, always</div>
+        <div class="offer">
+          <div><small>market value</small><b>$5,900</b></div>
+          <div class="bb"><small>instant buyback</small><b id="bbTick">$0</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene" id="s6">
+      <div class="gift" id="s6gift" style="top:480px;transform:translateX(-50%) scale(0.8)">
+        <div class="g-lid" style="top:-40px;transform:translateX(-58%) rotate(-12deg)"><i></i><span class="g-knot"></span></div>
+        <div class="g-box" style="margin-top:60px;box-shadow:0 70px 130px rgba(80,5,25,0.45), inset 0 14px 32px rgba(255,255,255,0.28)"><i></i></div>
+      </div>
+      <div class="endword" style="position:absolute;left:0;right:0;top:1010px" id="s6d">covet.gg</div>
+      <div class="endsub" style="position:absolute;left:0;right:0;top:1290px" id="s6s">your first box is free ♥</div>
+      <div class="endsub" style="position:absolute;left:0;right:0;top:1380px;font-size:32px;opacity:0.75" id="s6s2">18+ · odds printed on every box</div>
+    </div>
+
+    ${CONFETTI.map((c, i) => `<div class="confetti" id="cf${i}" style="background:${c.color};opacity:0"></div>`).join("")}
+    ${HEARTS.map((h, i) => `<div class="heartp" id="hp${i}" style="opacity:0">♥</div>`).join("")}
+    <div class="domain-pill" id="pill">covet.gg</div>
+  `;
+
+  const $ = (id) => document.getElementById(id);
+  const S = { 1: $("s1"), 2: $("s2"), 3: $("s3"), 4: $("s4"), 5: $("s5"), 6: $("s6") };
+
+  /* scene windows [in, out] with 0.35s crossfades */
+  const W = { 1: [0, 3.4], 2: [3.4, 7.6], 3: [7.6, 12.6], 4: [12.6, 15.8], 5: [15.8, 18.8], 6: [18.8, 22] };
+  const F = 0.35;
+  function sceneOpacity(t, k) {
+    const [a, b] = W[k];
+    if (t < a || t >= b) return 0;
+    return Math.min(easeOut(P(t, a, a + F)), k === 6 ? 1 : 1 - easeIn(P(t, b - F, b)));
+  }
+
+  const CARD_STEP = 320 + 26; /* rcard width + gap */
+  window.setFrame = function (f) {
+    const t = f / FPS;
+    for (const k in S) S[k].style.opacity = sceneOpacity(t, +k);
+
+    /* persistent domain pill: hidden during end card (it becomes the hero) */
+    $("pill").style.opacity = t < W[6][0] ? String(0.94 * easeOut(P(t, 0.4, 1.0))) : "0";
+
+    /* S1 */
+    if (sceneOpacity(t, 1) > 0) {
+      const pa = backOut(P(t, 0.15, 0.75)), pb = backOut(P(t, 0.45, 1.1));
+      $("s1a").style.transform = `translateY(${lerp(90, 0, pa)}px)`; $("s1a").style.opacity = P(t, 0.15, 0.6);
+      $("s1b").style.transform = `translateY(${lerp(90, 0, pb)}px)`; $("s1b").style.opacity = P(t, 0.45, 0.95);
+      $("s1k").style.opacity = P(t, 0.05, 0.4);
+      const g = backOut(P(t, 0.8, 1.6));
+      $("s1gift").style.transform = `translateX(-50%) translateY(${lerp(340, 0, g)}px) scale(${lerp(0.6, 1, g)})`;
+      $("s1gift").style.opacity = P(t, 0.8, 1.2);
+      const lid = easeOut(P(t, 2.0, 2.9));
+      $("s1lid").style.transform = `translateY(${lerp(0, -150, lid)}px) rotate(${lerp(0, -13, lid)}deg) translateX(${lerp(0, -40, lid)}px)`;
+      $("s1sp1").style.opacity = P(t, 2.2, 2.6); $("s1sp2").style.opacity = P(t, 2.35, 2.8);
+      $("s1sp1").style.transform = `translateY(${lerp(30, -40, easeOut(P(t, 2.2, 3.4)))}px)`;
+      $("s1sp2").style.transform = `translateY(${lerp(30, -60, easeOut(P(t, 2.35, 3.4)))}px)`;
+    }
+
+    /* S2: cards cascade */
+    if (sceneOpacity(t, 2) > 0) {
+      PICKS.forEach((p, i) => {
+        const q = backOut(P(t, 3.8 + i * 0.35, 4.6 + i * 0.35));
+        const el = $("pc" + i);
+        el.style.transform = `translateX(${lerp(900, 0, q)}px) rotate(${lerp(6, i % 2 ? 1.2 : -1.2, q)}deg)`;
+        el.style.opacity = P(t, 3.8 + i * 0.35, 4.2 + i * 0.35);
+      });
+    }
+
+    /* S3: the spin */
+    if (sceneOpacity(t, 3) > 0) {
+      const spin = easeOut(P(t, 8.0, 12.0));
+      const target = WIN_AT * CARD_STEP + 160 - 540; /* winner center under needle */
+      const x = lerp(target + 2800, target, spin);
+      $("strip").style.transform = `translateX(${-x}px)`;
+      /* magnet: card nearest center lifts */
+      const center = Math.round((x + 540 - 160) / CARD_STEP);
+      for (let i = 0; i < STRIP.length; i++) {
+        const el = $("rc" + i);
+        const on = i === center;
+        el.style.transform = on ? "translateY(-16px) scale(1.05)" : "none";
+        el.style.opacity = on ? "1" : "0.62";
+        el.style.borderColor = on ? "rgba(224,45,86,0.55)" : "rgba(43,24,39,0.07)";
+        el.style.boxShadow = on ? "0 40px 100px rgba(224,45,86,0.28)" : "0 30px 80px rgba(41,25,43,0.12)";
+      }
+    }
+
+    /* S4: odds rows */
+    if (sceneOpacity(t, 4) > 0) {
+      ODDS_ROWS.forEach((r, i) => {
+        const q = backOut(P(t, 13.0 + i * 0.28, 13.8 + i * 0.28));
+        const el = $("or" + i);
+        el.style.transform = `translateY(${lerp(140, 0, q)}px)`;
+        el.style.opacity = P(t, 13.0 + i * 0.28, 13.5 + i * 0.28);
+      });
+    }
+
+    /* S5: result + buyback ticker + confetti */
+    if (sceneOpacity(t, 5) > 0) {
+      const q = backOut(P(t, 16.0, 16.9));
+      $("resCard").style.transform = `translateY(${lerp(220, 0, q)}px) scale(${lerp(0.86, 1, q)})`;
+      $("resCard").style.opacity = P(t, 16.0, 16.5);
+      const tick = easeOut(P(t, 16.6, 18.0));
+      $("bbTick").textContent = "$" + Math.round(5015 * tick).toLocaleString();
+    }
+    const confT = P(t, 16.1, 18.8);
+    CONFETTI.forEach((c, i) => {
+      const el = $("cf" + i);
+      const q = clamp((confT * 2.7 - c.delay), 0, 1);
+      if (q <= 0 || sceneOpacity(t, 5) <= 0) { el.style.opacity = "0"; return; }
+      el.style.opacity = String(clamp(1.6 - q * 1.6, 0, 1));
+      el.style.left = c.x + c.drift * q + "px";
+      el.style.top = 420 + 1150 * easeIn(q) + "px";
+      el.style.transform = `rotate(${c.spin * q}deg) scale(${c.size})`;
+    });
+
+    /* S6: end card */
+    if (sceneOpacity(t, 6) > 0) {
+      $("bgCherry").style.opacity = easeOut(P(t, 18.8, 19.5));
+      const g = backOut(P(t, 19.0, 19.9));
+      $("s6gift").style.transform = `translateX(-50%) scale(${lerp(0.4, 0.8, g)})`;
+      $("s6gift").style.opacity = P(t, 19.0, 19.4);
+      const d = backOut(P(t, 19.5, 20.4));
+      $("s6d").style.transform = `translateY(${lerp(110, 0, d)}px)`;
+      $("s6d").style.opacity = P(t, 19.5, 20.0);
+      $("s6s").style.opacity = P(t, 20.2, 20.8);
+      $("s6s2").style.opacity = P(t, 20.6, 21.2);
+      HEARTS.forEach((h, i) => {
+        const el = $("hp" + i);
+        const q = clamp((P(t, 19.6, 22) * 1.8 - h.delay), 0, 1);
+        if (q <= 0) { el.style.opacity = "0"; return; }
+        el.style.opacity = String(clamp(1.4 - q * 1.4, 0, 1) * 0.9);
+        el.style.left = h.x + h.drift * q + "px";
+        el.style.top = 900 - 520 * easeOut(q) + "px";
+        el.style.transform = `scale(${h.size})`;
+        el.style.color = "#fff";
+      });
+    } else { $("bgCherry").style.opacity = "0"; HEARTS.forEach((h, i) => ($("hp" + i).style.opacity = "0")); }
+  };
+  setFrame(0);
+  </script>
+</body>
+</html>
